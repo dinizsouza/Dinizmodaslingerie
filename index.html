@@ -76,19 +76,17 @@
         .estoque { font-size: 13px; color: #28a745; margin-bottom: 10px; }
         .estoque.baixo { color: #e67e22; }
 
-        /* 🔘 BOTÕES MENORES — CONFORME PEDIDO! */
+        /* 🔘 BOTÕES MENORES */
         .btn-comprar-agora {
             width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7);
             color: white; font-size: 15px; font-weight: bold; border: none;
             padding: 10px; border-radius: 8px; cursor: pointer; margin-bottom: 6px;
         }
-        .btn-comprar-agora:disabled { background: #ccc; cursor: not-allowed; }
         .btn-adicionar {
             width: 100%; background: #28a745; color: white;
             font-size: 14px; font-weight: bold; border: none;
             padding: 8px; border-radius: 8px; cursor: pointer;
         }
-        .btn-adicionar:disabled { background: #ccc; cursor: not-allowed; }
 
         /* FORM CADASTRO */
         .form-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
@@ -105,6 +103,65 @@
         input[type="file"] { display: none; }
         .aviso { text-align: center; color: #888; padding: 30px; }
         .total { font-size: 20px; font-weight: bold; color: #8B0080; padding: 15px; background: white; border-radius: 10px; margin-top: 15px; text-align: right; }
+
+        /* 💳 TELA DE PAGAMENTO */
+        .modal-fundo { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: center; justify-content: center; padding: 15px; }
+        .modal-fundo.ativo { display: flex; }
+        .modal-pagamento {
+            background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 480px;
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+        .modal-pagamento h2 { color: #8B0080; text-align: center; margin-bottom: 20px; font-size: 20px; }
+        .fechar-modal { float: right; font-size: 26px; cursor: pointer; color: #888; margin-top: -10px; }
+        .grupo-input { margin-bottom: 12px; }
+        .grupo-input label { display: block; font-weight: bold; margin-bottom: 5px; color: #444; font-size: 14px; }
+        .grupo-input input, .grupo-input select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; }
+        .grupo-input input:focus, .grupo-input select:focus { outline: none; border-color: #8B0080; }
+        
+        /* FORMAS DE PAGAMENTO */
+        .pagamento-opcoes { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .pag-btn { 
+            flex: 1; min-width: 130px; padding: 14px; border: 2px solid #ddd; 
+            border-radius: 10px; background: white; cursor: pointer; text-align: center;
+            font-size: 15px; font-weight: bold; transition: all 0.2s;
+        }
+        .pag-btn.ativo { border-color: #8B0080; background: #f9f0f9; color: #8B0080; }
+        
+        .pix-info { 
+            background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 15px 0;
+            border-left: 4px solid #28a745; display: none;
+        }
+        .pix-info.mostrar { display: block; }
+        .chave-pix { background: white; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 15px; margin-top: 8px; word-break: break-all; border: 1px solid #ccc; }
+        .editar-pix-btn { margin-top: 10px; padding: 8px 12px; font-size: 13px; background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer; color: #555; }
+        
+        .credito-info { display: none; }
+        .credito-info.mostrar { display: block; }
+        .link-pagamento {
+            display: block; text-align: center; background: linear-gradient(45deg, #0066cc, #0099ff);
+            color: white; padding: 14px; border-radius: 10px; font-size: 17px; font-weight: bold;
+            text-decoration: none; margin: 15px 0; cursor: pointer; border: none;
+        }
+        .link-pagamento:hover { transform: scale(1.02); }
+        .aviso-cartao { font-size: 13px; color: #666; text-align: center; margin-top: 8px; }
+
+        .resumo-pedido { background: #f9f0f9; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        .resumo-pedido h3 { font-size: 16px; color: #8B0080; margin-bottom: 10px; }
+        .item-resumo { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
+        .total-final { font-size: 22px; font-weight: bold; color: #8B0080; text-align: right; margin-top: 10px; }
+
+        .btn-finalizar { 
+            width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7); color: white;
+            border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px;
+            cursor: pointer; margin-top: 10px;
+        }
+        .btn-cancelar { 
+            width: 100%; background: #eee; color: #444; border: none; padding: 12px;
+            font-size: 15px; border-radius: 10px; cursor: pointer; margin-top: 8px;
+        }
+        .sucesso-box { text-align: center; padding: 20px; display: none; }
+        .sucesso-box.mostrar { display: block; }
+        .sucesso-box .icone { font-size: 60px; color: #28a745; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -128,6 +185,7 @@
     <div id="menuAdminItens" class="escondido" style="margin-top:20px; border-top:2px solid #eee; padding-top:20px;">
         <button class="btn-menu-lateral" onclick="abrirSecao('cadastrar'); fecharMenuLateral();">➕ Cadastrar Produto</button>
         <button class="btn-menu-lateral" onclick="abrirSecao('pedidos'); fecharMenuLateral();">📋 Pedidos</button>
+        <button class="btn-menu-lateral" onclick="abrirSecao('configuracoes'); fecharMenuLateral();">⚙️ Configurações</button>
         <button class="btn-menu-lateral btn-sair" onclick="sairAdmin(); fecharMenuLateral();">🚪 Sair</button>
     </div>
 </div>
@@ -138,6 +196,101 @@
     <h3>🔐 Área Administrativa</h3>
     <input type="password" id="senhaAdmin" placeholder="Digite a senha">
     <button onclick="verificarSenhaAdmin()">Entrar</button>
+</div>
+
+<!-- ⚙️ CONFIGURAÇÕES — EDITAR CHAVE PIX E LINK DE PAGAMENTO -->
+<div id="sec-configuracoes" class="secao escondido">
+    <div class="form-box">
+        <h2>⚙️ Configurações de Pagamento</h2>
+        <div class="grupo-input">
+            <label>💿 Chave Pix (cole aqui)</label>
+            <input type="text" id="chavePixConfig" placeholder="Sua chave Pix" style="font-family:monospace; font-size:14px;">
+        </div>
+        <div class="grupo-input">
+            <label>💳 Link de Pagamento Cartão de Crédito</label>
+            <input type="url" id="linkPagamentoConfig" placeholder="https://seu-link-pagamento.com/...">
+        </div>
+        <button class="btn-principal" onclick="salvarConfigs()">✅ Salvar Configurações</button>
+    </div>
+</div>
+
+<!-- 💳 TELA DE PAGAMENTO -->
+<div class="modal-fundo" id="modalPagamento">
+    <div class="modal-pagamento">
+        <span class="fechar-modal" onclick="fecharPagamento()">&times;</span>
+        
+        <div id="formPagamento">
+            <h2>💳 Finalizar Pedido</h2>
+            
+            <!-- 📋 DADOS DO CLIENTE -->
+            <div class="grupo-input">
+                <label>Nome Completo *</label>
+                <input type="text" id="clienteNome" placeholder="Digite seu nome completo">
+            </div>
+            <div class="grupo-input">
+                <label>CPF *</label>
+                <input type="text" id="clienteCpf" placeholder="000.000.000-00" maxlength="14">
+            </div>
+            <div class="grupo-input">
+                <label>Telefone / WhatsApp *</label>
+                <input type="tel" id="clienteTel" placeholder="(00) 00000-0000" maxlength="15">
+            </div>
+            <div class="grupo-input">
+                <label>Endereço — Rua, Nº, Bairro *</label>
+                <input type="text" id="clienteEndereco" placeholder="Seu endereço completo">
+            </div>
+            <div class="linha">
+                <div class="grupo-input">
+                    <label>Cidade</label>
+                    <input type="text" id="clienteCidade" placeholder="Cidade">
+                </div>
+                <div class="grupo-input">
+                    <label>UF</label>
+                    <input type="text" id="clienteUf" placeholder="SP" maxlength="2" style="text-transform:uppercase;">
+                </div>
+            </div>
+
+            <!-- 💰 FORMA DE PAGAMENTO -->
+            <h3 style="margin:18px 0 10px 0; font-size:16px; color:#444;">Forma de Pagamento *</h3>
+            <div class="pagamento-opcoes">
+                <button class="pag-btn ativo" onclick="escolherPagamento('pix')">💿 Pix</button>
+                <button class="pag-btn" onclick="escolherPagamento('credito')">💳 Crédito</button>
+            </div>
+
+            <!-- 💿 PIX -->
+            <div class="pix-info mostrar" id="pixInfo">
+                <strong>💿 Chave Pix — Marcelo Diniz:</strong>
+                <div class="chave-pix" id="chavePixExibir">carregando...</div>
+                <small>⚠️ Após o pagamento, envie o comprovante no WhatsApp</small>
+            </div>
+
+            <!-- 💳 CRÉDITO — LINK DE PAGAMENTO -->
+            <div class="credito-info" id="creditoInfo">
+                <p style="text-align:center; color:#444; margin-bottom:10px;">Clique abaixo para pagar com cartão de crédito:</p>
+                <a class="link-pagamento" id="linkPagamentoExibir" href="#" target="_blank">💳 Pagar com Cartão de Crédito</a>
+                <p class="aviso-cartao">🔗 Você será redirecionado para a página de pagamento seguro</p>
+            </div>
+
+            <!-- 📊 RESUMO DO PEDIDO -->
+            <div class="resumo-pedido">
+                <h3>📦 Resumo do Pedido</h3>
+                <div id="resumoItens"></div>
+                <div class="total-final">TOTAL: R$ <span id="resumoTotal">0,00</span></div>
+            </div>
+
+            <button class="btn-finalizar" onclick="confirmarPedido()">✅ Confirmar Pedido</button>
+            <button class="btn-cancelar" onclick="fecharPagamento()">Cancelar</button>
+        </div>
+
+        <!-- ✅ CONFIRMAÇÃO -->
+        <div class="sucesso-box" id="sucessoPedido">
+            <div class="icone">✅</div>
+            <h2 style="color:#28a745;">Pedido Confirmado!</h2>
+            <p style="margin:15px 0; font-size:16px;">Obrigado pela compra, <strong id="nomeCliente"></strong>! 🎉</p>
+            <p style="color:#666; font-size:14px;">Seu pedido foi registrado com sucesso.<br>Entraremos em contato para confirmação.</p>
+            <button class="btn-finalizar" style="margin-top:20px;" onclick="fecharPagamento(); abrirSecao('loja');">🛍️ Continuar Comprando</button>
+        </div>
+    </div>
 </div>
 
 <!-- 🛍️ LOJA -->
@@ -189,13 +342,15 @@
         <p class="aviso">🛒 Carrinho vazio</p>
     </div>
     <div class="total">TOTAL: R$ <span id="totalValor">0,00</span></div>
+    <button class="btn-principal" style="margin-top:20px; font-size:17px; padding:15px;" onclick="abrirPagamento()">💳 Finalizar Compra</button>
 </div>
 
 <!-- 📋 PEDIDOS -->
 <div id="sec-pedidos" class="secao escondido">
     <div class="form-box">
         <h2>📋 Pedidos Recebidos</h2>
-        <p class="aviso">Função em desenvolvimento...</p>
+        <p class="aviso">Carregando pedidos...</p>
+        <div id="listaPedidos"></div>
     </div>
 </div>
 
@@ -206,6 +361,13 @@
     let carrinho = [];
     let listaProdutos = [];
     let db = null;
+    let formaPagamento = "pix";
+
+    // ⚙️ CONFIGURAÇÕES — PADRÃO (ALTERE AQUI SE QUISER)
+    let configs = {
+        chavePix: "sua-chave-pix-aqui", // ← EDITE AQUI SUA CHAVE PIX
+        linkPagamentoCredito: "https://seu-link-de-pagamento-aqui.com" // ← EDITE AQUI SEU LINK
+    };
 
     // 🔥 FIREBASE
     const firebaseConfig = {
@@ -221,7 +383,48 @@
     try {
         const app = firebase.initializeApp(firebaseConfig);
         db = firebase.database();
+        carregarConfigs(); // Carrega configurações salvas
     } catch (e) { console.error("Erro Firebase:", e); }
+
+    // ⚙️ SALVAR E CARREGAR CONFIGURAÇÕES
+    function salvarConfigs() {
+        if (!adminLogado) { alert("🔐 Faça login como administrador!"); return; }
+        const chavePix = document.getElementById('chavePixConfig').value.trim();
+        const linkPag = document.getElementById('linkPagamentoConfig').value.trim();
+        
+        if (!chavePix) { alert("⚠️ Digite sua chave Pix!"); return; }
+        if (!linkPag) { alert("⚠️ Digite o link de pagamento!"); return; }
+
+        db.ref('configuracoes').set({
+            chavePix: chavePix,
+            linkPagamentoCredito: linkPag
+        }).then(() => {
+            configs.chavePix = chavePix;
+            configs.linkPagamentoCredito = linkPag;
+            alert("✅ Configurações salvas!");
+        }).catch(e => alert("❌ Erro: " + e.message));
+    }
+
+    function carregarConfigs() {
+        if (!db) return;
+        db.ref('configuracoes').on('value', snapshot => {
+            const dados = snapshot.val();
+            if (dados) {
+                configs.chavePix = dados.chavePix || configs.chavePix;
+                configs.linkPagamentoCredito = dados.linkPagamentoCredito || configs.linkPagamentoCredito;
+            }
+            // Atualiza na tela de pagamento
+            const elPix = document.getElementById('chavePixExibir');
+            const elLink = document.getElementById('linkPagamentoExibir');
+            if (elPix) elPix.textContent = configs.chavePix;
+            if (elLink) elLink.href = configs.linkPagamentoCredito;
+            // Preenche no painel de configurações
+            if (document.getElementById('chavePixConfig')) {
+                document.getElementById('chavePixConfig').value = configs.chavePix;
+                document.getElementById('linkPagamentoConfig').value = configs.linkPagamentoCredito;
+            }
+        });
+    }
 
     // 📋 MENU LATERAL
     function abrirMenuLateral() {
@@ -247,6 +450,9 @@
             adminLogado = true;
             fecharSenhaAdmin();
             document.getElementById('menuAdminItens').classList.remove('escondido');
+            // Preenche configurações
+            document.getElementById('chavePixConfig').value = configs.chavePix;
+            document.getElementById('linkPagamentoConfig').value = configs.linkPagamentoCredito;
             alert("✅ Bem-vindo, Administrador!");
         } else alert("❌ Senha incorreta!");
     }
@@ -263,6 +469,7 @@
         document.getElementById(`sec-${nome}`).classList.add("ativa");
         if (nome === 'loja') carregarProdutos();
         if (nome === 'carrinho') atualizarCarrinho();
+        if (nome === 'pedidos') carregarPedidos();
     }
 
     // 📸 FOTO
@@ -331,7 +538,7 @@
                         <div class="produto-nome">${p.nome}</div>
                         <div class="produto-preco">R$ ${p.preco.toFixed(2).replace(".",",")}</div>
                         <div class="estoque ${p.estoque <= p.estoqueMinimo ? 'baixo' : ''}">${p.estoque} disponíveis</div>
-                        <button class="btn-comprar-agora" onclick="adicionarCarrinho('${p.id}')">🛒 Comprar</button>
+                        <button class="btn-comprar-agora" onclick="comprarAgora('${p.id}')">🛒 Comprar</button>
                         <button class="btn-adicionar" onclick="adicionarCarrinho('${p.id}')">➕ Adicionar</button>
                     </div>
                 </div>
@@ -348,9 +555,19 @@
         atualizarContador();
         alert(`✅ ${prod.nome} adicionado!`);
     }
+
+    function comprarAgora(id) {
+        const prod = listaProdutos.find(p => p.id === id);
+        if (!prod) return;
+        carrinho = [{...prod, quantidade: 1}];
+        atualizarContador();
+        abrirPagamento();
+    }
+
     function atualizarContador() {
         document.getElementById("contarCarrinho").textContent = carrinho.reduce((s,i) => s + i.quantidade, 0);
     }
+
     function atualizarCarrinho() {
         const container = document.getElementById("listaCarrinho");
         if (carrinho.length === 0) {
@@ -358,17 +575,166 @@
             document.getElementById("totalValor").textContent = "0,00";
             return;
         }
-        container.innerHTML = carrinho.map(item => `
+        container.innerHTML = carrinho.map((item, idx) => `
             <div style="background:white; padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
                 <div><strong>${item.nome}</strong><br>R$ ${item.preco.toFixed(2).replace(".",",")} x ${item.quantidade}</div>
-                <div><strong>R$ ${(item.preco * item.quantidade).toFixed(2).replace(".",",")}</strong></div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="diminuirQtd(${idx})" style="width:30px; height:30px; padding:0; border-radius:50%; border:none; background:#eee; cursor:pointer;">−</button>
+                    <span>${item.quantidade}</span>
+                    <button onclick="aumentarQtd(${idx})" style="width:30px; height:30px; padding:0; border-radius:50%; border:none; background:#eee; cursor:pointer;">+</button>
+                    <button onclick="removerItem(${idx})" style="background:none; border:none; color:red; font-size:18px; cursor:pointer; margin-left:8px;">🗑️</button>
+                </div>
             </div>
         `).join("");
         const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
         document.getElementById("totalValor").textContent = total.toFixed(2).replace(".",",");
     }
 
-    window.onload = () => { if (db) carregarProdutos(); };
+    function diminuirQtd(idx) {
+        if (carrinho[idx].quantidade > 1) carrinho[idx].quantidade--;
+        else carrinho.splice(idx, 1);
+        atualizarContador(); atualizarCarrinho();
+    }
+    function aumentarQtd(idx) {
+        carrinho[idx].quantidade++;
+        atualizarContador(); atualizarCarrinho();
+    }
+    function removerItem(idx) {
+        carrinho.splice(idx, 1);
+        atualizarContador(); atualizarCarrinho();
+    }
+
+    // 💳 TELA DE PAGAMENTO
+    function abrirPagamento() {
+        if (carrinho.length === 0) { alert("🛒 Carrinho vazio!"); return; }
+        document.getElementById('modalPagamento').classList.add('ativo');
+        document.getElementById('formPagamento').style.display = 'block';
+        document.getElementById('sucessoPedido').classList.remove('mostrar');
+        
+        // Atualiza chave Pix e link de pagamento
+        document.getElementById('chavePixExibir').textContent = configs.chavePix;
+        document.getElementById('linkPagamentoExibir').href = configs.linkPagamentoCredito;
+        
+        // Atualiza resumo
+        const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+        document.getElementById('resumoItens').innerHTML = carrinho.map(i => `
+            <div class="item-resumo">
+                <span>${i.nome} × ${i.quantidade}</span>
+                <span>R$ ${(i.preco * i.quantidade).toFixed(2).replace(".",",")}</span>
+            </div>
+        `).join("");
+        document.getElementById('resumoTotal').textContent = total.toFixed(2).replace(".",",");
+    }
+
+    function fecharPagamento() {
+        document.getElementById('modalPagamento').classList.remove('ativo');
+        // Limpar campos
+        document.getElementById('clienteNome').value = "";
+        document.getElementById('clienteCpf').value = "";
+        document.getElementById('clienteTel').value = "";
+        document.getElementById('clienteEndereco').value = "";
+        document.getElementById('clienteCidade').value = "";
+        document.getElementById('clienteUf').value = "";
+        formaPagamento = "pix";
+        atualizarBotoesPagamento();
+    }
+
+    function escolherPagamento(tipo) {
+        formaPagamento = tipo;
+        atualizarBotoesPagamento();
+    }
+
+    function atualizarBotoesPagamento() {
+        document.querySelectorAll('.pag-btn').forEach(btn => btn.classList.remove('ativo'));
+        event.target.classList.add('ativo');
+        
+        if (formaPagamento === 'pix') {
+            document.getElementById('pixInfo').classList.add('mostrar');
+            document.getElementById('creditoInfo').classList.remove('mostrar');
+        } else {
+            document.getElementById('pixInfo').classList.remove('mostrar');
+            document.getElementById('creditoInfo').classList.add('mostrar');
+        }
+    }
+
+    function confirmarPedido() {
+        // Validação
+        const nome = document.getElementById('clienteNome').value.trim();
+        const cpf = document.getElementById('clienteCpf').value.trim();
+        const telefone = document.getElementById('clienteTel').value.trim();
+        const endereco = document.getElementById('clienteEndereco').value.trim();
+
+        if (!nome || !cpf || !telefone || !endereco) {
+            alert("⚠️ Preencha todos os dados obrigatórios!");
+            return;
+        }
+
+        // Salvar pedido no Firebase
+        const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+        const pedido = {
+            cliente: {
+                nome, cpf, telefone, endereco,
+                cidade: document.getElementById('clienteCidade').value.trim(),
+                uf: document.getElementById('clienteUf').value.trim()
+            },
+            itens: carrinho,
+            total,
+            formaPagamento,
+            data: new Date().toISOString(),
+            status: "pendente"
+        };
+
+        db.ref('pedidos').push(pedido).then(() => {
+            // Mostrar sucesso
+            document.getElementById('formPagamento').style.display = 'none';
+            document.getElementById('sucessoPedido').classList.add('mostrar');
+            document.getElementById('nomeCliente').textContent = nome;
+            // Limpar carrinho
+            carrinho = [];
+            atualizarContador();
+        }).catch(e => alert("❌ Erro: " + e.message));
+    }
+
+    // 📋 CARREGAR PEDIDOS (ADMIN)
+    function carregarPedidos() {
+        if (!adminLogado) {
+            document.getElementById('listaPedidos').innerHTML = '<p class="aviso">🔐 Faça login como administrador para ver os pedidos.</p>';
+            return;
+        }
+        if (!db) return;
+        
+        db.ref('pedidos').orderByChild('data').on('value', snapshot => {
+            const pedidos = snapshot.val() || {};
+            const lista = Object.entries(pedidos).map(([id, p]) => ({id, ...p})).reverse();
+            const container = document.getElementById('listaPedidos');
+            
+            if (lista.length === 0) {
+                container.innerHTML = '<p class="aviso">📭 Nenhum pedido recebido ainda.</p>';
+                return;
+            }
+
+            container.innerHTML = lista.map(p => `
+                <div style="background:#f9f9f9; padding:15px; border-radius:10px; margin-bottom:12px; border-left:4px solid #8B0080;">
+                    <h4 style="color:#8B0080; margin-bottom:8px;">${p.cliente.nome}</h4>
+                    <p style="font-size:14px; margin-bottom:5px;">📞 ${p.cliente.telefone} | 📍 ${p.cliente.endereco}</p>
+                    <p style="font-size:14px; margin-bottom:8px;">💳 ${p.formaPagamento === 'pix' ? 'Pix' : 'Cartão de Crédito'}</p>
+                    <strong>Itens:</strong>
+                    <ul style="margin:5px 0 10px 20px; font-size:14px;">
+                        ${p.itens.map(i => `<li>${i.nome} — ${i.quantidade}x R$ ${i.preco.toFixed(2).replace(".",",")}</li>`).join("")}
+                    </ul>
+                    <div style="font-weight:bold; font-size:16px; color:#8B0080;">Total: R$ ${p.total.toFixed(2).replace(".",",")}</div>
+                    <small style="color:#888;">${new Date(p.data).toLocaleString('pt-BR')}</small>
+                </div>
+            `).join("");
+        });
+    }
+
+    window.onload = () => { 
+        if (db) {
+            carregarProdutos();
+            carregarConfigs();
+        }
+    };
 </script>
 
 </body>

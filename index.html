@@ -76,7 +76,7 @@
         .estoque { font-size: 13px; color: #28a745; margin-bottom: 10px; }
         .estoque.baixo { color: #e67e22; }
 
-        /* 🔘 BOTÕES MENORES */
+        /* 🔘 BOTÕES */
         .btn-comprar-agora {
             width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7);
             color: white; font-size: 15px; font-weight: bold; border: none;
@@ -102,7 +102,31 @@
         .area-foto img { width: 100%; height: 100%; object-fit: cover; }
         input[type="file"] { display: none; }
         .aviso { text-align: center; color: #888; padding: 30px; }
-        .total { font-size: 20px; font-weight: bold; color: #8B0080; padding: 15px; background: white; border-radius: 10px; margin-top: 15px; text-align: right; }
+        
+        /* 🛒 CARRINHO */
+        .item-carrinho { 
+            background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; 
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+            gap: 8px;
+        }
+        .controle-qtd { display: flex; align-items: center; gap: 8px; }
+        .btn-qtd { 
+            width: 32px; height: 32px; padding: 0; border-radius: 50%; border: none; 
+            background: #eee; cursor: pointer; font-size: 18px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-remover { background: none; border: none; color: #e53935; font-size: 20px; cursor: pointer; }
+        .total-carrinho { 
+            font-size: 22px; font-weight: bold; color: #8B0080; padding: 18px; 
+            background: white; border-radius: 10px; margin-top: 15px; text-align: right;
+        }
+        .btn-finalizar-compra {
+            width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7);
+            color: white; font-size: 18px; font-weight: bold; border: none;
+            padding: 15px; border-radius: 10px; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(139,0,128,0.3);
+        }
+        .btn-finalizar-compra:active { transform: scale(0.98); }
 
         /* 💳 TELA DE PAGAMENTO */
         .modal-fundo { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: center; justify-content: center; padding: 15px; }
@@ -118,7 +142,6 @@
         .grupo-input input, .grupo-input select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; }
         .grupo-input input:focus, .grupo-input select:focus { outline: none; border-color: #8B0080; }
         
-        /* FORMAS DE PAGAMENTO */
         .pagamento-opcoes { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
         .pag-btn { 
             flex: 1; min-width: 130px; padding: 14px; border: 2px solid #ddd; 
@@ -133,7 +156,6 @@
         }
         .pix-info.mostrar { display: block; }
         .chave-pix { background: white; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 15px; margin-top: 8px; word-break: break-all; border: 1px solid #ccc; }
-        .editar-pix-btn { margin-top: 10px; padding: 8px 12px; font-size: 13px; background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer; color: #555; }
         
         .credito-info { display: none; }
         .credito-info.mostrar { display: block; }
@@ -142,7 +164,6 @@
             color: white; padding: 14px; border-radius: 10px; font-size: 17px; font-weight: bold;
             text-decoration: none; margin: 15px 0; cursor: pointer; border: none;
         }
-        .link-pagamento:hover { transform: scale(1.02); }
         .aviso-cartao { font-size: 13px; color: #666; text-align: center; margin-top: 8px; }
 
         .resumo-pedido { background: #f9f0f9; padding: 15px; border-radius: 10px; margin: 15px 0; }
@@ -150,7 +171,7 @@
         .item-resumo { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
         .total-final { font-size: 22px; font-weight: bold; color: #8B0080; text-align: right; margin-top: 10px; }
 
-        .btn-finalizar { 
+        .btn-finalizar-pedido { 
             width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7); color: white;
             border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px;
             cursor: pointer; margin-top: 10px;
@@ -198,17 +219,17 @@
     <button onclick="verificarSenhaAdmin()">Entrar</button>
 </div>
 
-<!-- ⚙️ CONFIGURAÇÕES — EDITAR CHAVE PIX E LINK DE PAGAMENTO -->
+<!-- ⚙️ CONFIGURAÇÕES -->
 <div id="sec-configuracoes" class="secao escondido">
     <div class="form-box">
         <h2>⚙️ Configurações de Pagamento</h2>
         <div class="grupo-input">
-            <label>💿 Chave Pix (cole aqui)</label>
-            <input type="text" id="chavePixConfig" placeholder="Sua chave Pix" style="font-family:monospace; font-size:14px;">
+            <label>💿 Chave Pix</label>
+            <input type="text" id="chavePixConfig" placeholder="Sua chave Pix">
         </div>
         <div class="grupo-input">
             <label>💳 Link de Pagamento Cartão de Crédito</label>
-            <input type="url" id="linkPagamentoConfig" placeholder="https://seu-link-pagamento.com/...">
+            <input type="url" id="linkPagamentoConfig" placeholder="https://seu-link-pagamento.com">
         </div>
         <button class="btn-principal" onclick="salvarConfigs()">✅ Salvar Configurações</button>
     </div>
@@ -222,7 +243,6 @@
         <div id="formPagamento">
             <h2>💳 Finalizar Pedido</h2>
             
-            <!-- 📋 DADOS DO CLIENTE -->
             <div class="grupo-input">
                 <label>Nome Completo *</label>
                 <input type="text" id="clienteNome" placeholder="Digite seu nome completo">
@@ -250,45 +270,40 @@
                 </div>
             </div>
 
-            <!-- 💰 FORMA DE PAGAMENTO -->
             <h3 style="margin:18px 0 10px 0; font-size:16px; color:#444;">Forma de Pagamento *</h3>
             <div class="pagamento-opcoes">
                 <button class="pag-btn ativo" onclick="escolherPagamento('pix')">💿 Pix</button>
                 <button class="pag-btn" onclick="escolherPagamento('credito')">💳 Crédito</button>
             </div>
 
-            <!-- 💿 PIX -->
             <div class="pix-info mostrar" id="pixInfo">
                 <strong>💿 Chave Pix — Marcelo Diniz:</strong>
                 <div class="chave-pix" id="chavePixExibir">carregando...</div>
                 <small>⚠️ Após o pagamento, envie o comprovante no WhatsApp</small>
             </div>
 
-            <!-- 💳 CRÉDITO — LINK DE PAGAMENTO -->
             <div class="credito-info" id="creditoInfo">
                 <p style="text-align:center; color:#444; margin-bottom:10px;">Clique abaixo para pagar com cartão de crédito:</p>
                 <a class="link-pagamento" id="linkPagamentoExibir" href="#" target="_blank">💳 Pagar com Cartão de Crédito</a>
                 <p class="aviso-cartao">🔗 Você será redirecionado para a página de pagamento seguro</p>
             </div>
 
-            <!-- 📊 RESUMO DO PEDIDO -->
             <div class="resumo-pedido">
                 <h3>📦 Resumo do Pedido</h3>
                 <div id="resumoItens"></div>
                 <div class="total-final">TOTAL: R$ <span id="resumoTotal">0,00</span></div>
             </div>
 
-            <button class="btn-finalizar" onclick="confirmarPedido()">✅ Confirmar Pedido</button>
+            <button class="btn-finalizar-pedido" onclick="confirmarPedido()">✅ Confirmar Pedido</button>
             <button class="btn-cancelar" onclick="fecharPagamento()">Cancelar</button>
         </div>
 
-        <!-- ✅ CONFIRMAÇÃO -->
         <div class="sucesso-box" id="sucessoPedido">
             <div class="icone">✅</div>
             <h2 style="color:#28a745;">Pedido Confirmado!</h2>
             <p style="margin:15px 0; font-size:16px;">Obrigado pela compra, <strong id="nomeCliente"></strong>! 🎉</p>
             <p style="color:#666; font-size:14px;">Seu pedido foi registrado com sucesso.<br>Entraremos em contato para confirmação.</p>
-            <button class="btn-finalizar" style="margin-top:20px;" onclick="fecharPagamento(); abrirSecao('loja');">🛍️ Continuar Comprando</button>
+            <button class="btn-finalizar-pedido" style="margin-top:20px;" onclick="fecharPagamento(); abrirSecao('loja');">🛍️ Continuar Comprando</button>
         </div>
     </div>
 </div>
@@ -336,13 +351,22 @@
     </div>
 </div>
 
-<!-- 🛒 CARRINHO -->
+<!-- 🛒 CARRINHO — CORRIGIDO ✅ -->
 <div id="sec-carrinho" class="secao escondido">
+    <h2 style="color:#8B0080; margin-bottom:15px; text-align:center;">🛒 Meu Carrinho</h2>
     <div id="listaCarrinho">
-        <p class="aviso">🛒 Carrinho vazio</p>
+        <p class="aviso">🛒 Carrinho vazio — adicione produtos!</p>
     </div>
-    <div class="total">TOTAL: R$ <span id="totalValor">0,00</span></div>
-    <button class="btn-principal" style="margin-top:20px; font-size:17px; padding:15px;" onclick="abrirPagamento()">💳 Finalizar Compra</button>
+    
+    <!-- 💰 VALOR TOTAL SEMPRE VISÍVEL -->
+    <div class="total-carrinho">
+        TOTAL: R$ <span id="totalValor">0,00</span>
+    </div>
+    
+    <!-- 🛒 BOTÃO COMPRAR — SEMPRE APARECE -->
+    <button class="btn-finalizar-compra" id="btnFinalizarCompra" onclick="abrirPagamento()">
+        💳 Finalizar Compra
+    </button>
 </div>
 
 <!-- 📋 PEDIDOS -->
@@ -358,16 +382,18 @@
     const SENHA_ADMIN = "290413";
     let adminLogado = false;
     let fotoBase64 = "";
-    let carrinho = [];
     let listaProdutos = [];
     let db = null;
     let formaPagamento = "pix";
 
-    // ⚙️ CONFIGURAÇÕES — PADRÃO (ALTERE AQUI SE QUISER)
+    // ⚙️ CONFIGURAÇÕES PADRÃO
     let configs = {
-        chavePix: "00020126580014BR.GOV.BCB.PIX0136f5cc71a3-9e60-48e7-8b09-f8e810c1ba1c5204000053039865802BR5922Marcelo Diniz de Souza6009SAO PAULO621405106WW6ValMun63042DA1", // ← EDITE AQUI SUA CHAVE PIX
-        linkPagamentoCredito: "https://link.mercadopago.com.br/lojadinizmodas" // ← EDITE AQUI SEU LINK
+        chavePix: "00020126580014BR.GOV.BCB.PIX0136f5cc71a3-9e60-48e7-8b09-f8e810c1ba1c5204000053039865802BR5922Marcelo Diniz de Souza6009SAO PAULO62140510tl0XSr2d4s6304AF94",
+        linkPagamentoCredito: "https://link.mercadopago.com.br/lojadinizmodas"
     };
+
+    // 🛒 CARRINHO — SALVO NO CELULAR (LOCALSTORAGE) ✅
+    let carrinho = JSON.parse(localStorage.getItem('carrinhoDinizModas')) || [];
 
     // 🔥 FIREBASE
     const firebaseConfig = {
@@ -383,26 +409,29 @@
     try {
         const app = firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        carregarConfigs(); // Carrega configurações salvas
+        carregarConfigs();
     } catch (e) { console.error("Erro Firebase:", e); }
 
-    // ⚙️ SALVAR E CARREGAR CONFIGURAÇÕES
+    // 💾 SALVAR CARRINHO NO CELULAR ✅
+    function salvarCarrinho() {
+        localStorage.setItem('carrinhoDinizModas', JSON.stringify(carrinho));
+        atualizarContador();
+    }
+
+    // ⚙️ CONFIGURAÇÕES
     function salvarConfigs() {
         if (!adminLogado) { alert("🔐 Faça login como administrador!"); return; }
         const chavePix = document.getElementById('chavePixConfig').value.trim();
         const linkPag = document.getElementById('linkPagamentoConfig').value.trim();
-        
         if (!chavePix) { alert("⚠️ Digite sua chave Pix!"); return; }
         if (!linkPag) { alert("⚠️ Digite o link de pagamento!"); return; }
 
-        db.ref('configuracoes').set({
-            chavePix: chavePix,
-            linkPagamentoCredito: linkPag
-        }).then(() => {
-            configs.chavePix = chavePix;
-            configs.linkPagamentoCredito = linkPag;
-            alert("✅ Configurações salvas!");
-        }).catch(e => alert("❌ Erro: " + e.message));
+        db.ref('configuracoes').set({ chavePix, linkPagamentoCredito: linkPag })
+            .then(() => {
+                configs.chavePix = chavePix;
+                configs.linkPagamentoCredito = linkPag;
+                alert("✅ Salvo!");
+            });
     }
 
     function carregarConfigs() {
@@ -413,12 +442,10 @@
                 configs.chavePix = dados.chavePix || configs.chavePix;
                 configs.linkPagamentoCredito = dados.linkPagamentoCredito || configs.linkPagamentoCredito;
             }
-            // Atualiza na tela de pagamento
             const elPix = document.getElementById('chavePixExibir');
             const elLink = document.getElementById('linkPagamentoExibir');
             if (elPix) elPix.textContent = configs.chavePix;
             if (elLink) elLink.href = configs.linkPagamentoCredito;
-            // Preenche no painel de configurações
             if (document.getElementById('chavePixConfig')) {
                 document.getElementById('chavePixConfig').value = configs.chavePix;
                 document.getElementById('linkPagamentoConfig').value = configs.linkPagamentoCredito;
@@ -426,7 +453,7 @@
         });
     }
 
-    // 📋 MENU LATERAL
+    // 📋 MENU
     function abrirMenuLateral() {
         document.getElementById('menuLateral').classList.add('aberto');
         document.getElementById('fundoSidebar').classList.add('ativo');
@@ -437,23 +464,16 @@
     }
 
     // 🔐 ADMIN
-    function abrirSenhaAdmin() {
-        if (adminLogado) return;
-        document.getElementById('caixaSenhaAdmin').classList.add('ativo');
-    }
-    function fecharSenhaAdmin() {
-        document.getElementById('caixaSenhaAdmin').classList.remove('ativo');
-        document.getElementById('senhaAdmin').value = "";
-    }
+    function abrirSenhaAdmin() { if (!adminLogado) document.getElementById('caixaSenhaAdmin').classList.add('ativo'); }
+    function fecharSenhaAdmin() { document.getElementById('caixaSenhaAdmin').classList.remove('ativo'); }
     function verificarSenhaAdmin() {
         if (document.getElementById('senhaAdmin').value === SENHA_ADMIN) {
             adminLogado = true;
             fecharSenhaAdmin();
             document.getElementById('menuAdminItens').classList.remove('escondido');
-            // Preenche configurações
             document.getElementById('chavePixConfig').value = configs.chavePix;
             document.getElementById('linkPagamentoConfig').value = configs.linkPagamentoCredito;
-            alert("✅ Bem-vindo, Administrador!");
+            alert("✅ Bem-vindo!");
         } else alert("❌ Senha incorreta!");
     }
     function sairAdmin() {
@@ -468,7 +488,7 @@
         document.querySelectorAll(".secao").forEach(s => s.classList.remove("ativa"));
         document.getElementById(`sec-${nome}`).classList.add("ativa");
         if (nome === 'loja') carregarProdutos();
-        if (nome === 'carrinho') atualizarCarrinho();
+        if (nome === 'carrinho') atualizarCarrinho(); // ✅ Atualiza ao abrir
         if (nome === 'pedidos') carregarPedidos();
     }
 
@@ -488,7 +508,7 @@
 
     // ➕ CADASTRAR
     function cadastrarProduto() {
-        if (!db) { alert("⚠️ Recarregue a página!"); return; }
+        if (!db) { alert("⚠️ Recarregue!"); return; }
         const nome = document.getElementById("nomeProd").value.trim();
         const cat = document.getElementById("catProd").value;
         const tam = document.getElementById("tamProd").value.trim() || "Único";
@@ -502,20 +522,20 @@
             nome, categoria: cat, tamanho: tam, preco, estoque, estoqueMinimo,
             imagem: fotoBase64, dataCadastro: new Date().toISOString()
         }).then(() => {
-            alert("✅ Cadastrado com sucesso!");
+            alert("✅ Cadastrado!");
             document.getElementById("nomeProd").value = "";
             document.getElementById("precoProd").value = "";
             document.getElementById("previewFoto").style.display = "none";
             document.getElementById("iconeFoto").style.display = "block";
             fotoBase64 = "";
             abrirSecao('loja');
-        }).catch(e => alert("❌ Erro: " + e.message));
+        });
     }
 
     // 📦 CARREGAR PRODUTOS
     function carregarProdutos() {
         if (!db) {
-            document.getElementById("gradeProdutos").innerHTML = '<p class="aviso">⏳ Aguardando conexão...</p>';
+            document.getElementById("gradeProdutos").innerHTML = '<p class="aviso">⏳ Aguardando...</p>';
             return;
         }
         db.ref('produtos').on('value', snapshot => {
@@ -524,7 +544,7 @@
             const container = document.getElementById("gradeProdutos");
             
             if (listaProdutos.length === 0) {
-                container.innerHTML = '<p class="aviso">📦 Nenhum produto cadastrado.<br>Menu → Área Administrativa → Cadastrar</p>';
+                container.innerHTML = '<p class="aviso">📦 Nenhum produto cadastrado.</p>';
                 return;
             }
 
@@ -546,13 +566,13 @@
         });
     }
 
-    // 🛒 CARRINHO
+    // 🛒 CARRINHO — FUNÇÕES CORRIGIDAS ✅
     function adicionarCarrinho(id) {
         const prod = listaProdutos.find(p => p.id === id);
         if (!prod) return;
         const existe = carrinho.find(i => i.id === id);
         existe ? existe.quantidade++ : carrinho.push({...prod, quantidade: 1});
-        atualizarContador();
+        salvarCarrinho(); // ✅ Salva no celular
         alert(`✅ ${prod.nome} adicionado!`);
     }
 
@@ -560,7 +580,7 @@
         const prod = listaProdutos.find(p => p.id === id);
         if (!prod) return;
         carrinho = [{...prod, quantidade: 1}];
-        atualizarContador();
+        salvarCarrinho();
         abrirPagamento();
     }
 
@@ -568,24 +588,40 @@
         document.getElementById("contarCarrinho").textContent = carrinho.reduce((s,i) => s + i.quantidade, 0);
     }
 
+    // ✅ ATUALIZA CARRINHO COM VALOR TOTAL
     function atualizarCarrinho() {
         const container = document.getElementById("listaCarrinho");
+        const btnFinalizar = document.getElementById("btnFinalizarCompra");
+        
         if (carrinho.length === 0) {
-            container.innerHTML = '<p class="aviso">🛒 Carrinho vazio</p>';
+            container.innerHTML = '<p class="aviso">🛒 Carrinho vazio — adicione produtos!</p>';
             document.getElementById("totalValor").textContent = "0,00";
+            btnFinalizar.style.display = "none"; // Esconde botão se vazio
             return;
         }
+        
+        btnFinalizar.style.display = "block"; // Mostra botão com itens
+
+        // Renderiza itens
         container.innerHTML = carrinho.map((item, idx) => `
-            <div style="background:white; padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>${item.nome}</strong><br>R$ ${item.preco.toFixed(2).replace(".",",")} x ${item.quantidade}</div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <button onclick="diminuirQtd(${idx})" style="width:30px; height:30px; padding:0; border-radius:50%; border:none; background:#eee; cursor:pointer;">−</button>
-                    <span>${item.quantidade}</span>
-                    <button onclick="aumentarQtd(${idx})" style="width:30px; height:30px; padding:0; border-radius:50%; border:none; background:#eee; cursor:pointer;">+</button>
-                    <button onclick="removerItem(${idx})" style="background:none; border:none; color:red; font-size:18px; cursor:pointer; margin-left:8px;">🗑️</button>
+            <div class="item-carrinho">
+                <div style="flex:1; min-width:150px;">
+                    <strong>${item.nome}</strong><br>
+                    R$ ${item.preco.toFixed(2).replace(".",",")} cada
                 </div>
+                <div class="controle-qtd">
+                    <button class="btn-qtd" onclick="diminuirQtd(${idx})">−</button>
+                    <span style="font-weight:bold; min-width:24px; text-align:center;">${item.quantidade}</span>
+                    <button class="btn-qtd" onclick="aumentarQtd(${idx})">+</button>
+                </div>
+                <div style="min-width:100px; text-align:right; font-weight:bold; color:#8B0080;">
+                    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".",",")}
+                </div>
+                <button class="btn-remover" onclick="removerItem(${idx})">🗑️</button>
             </div>
         `).join("");
+
+        // ✅ CALCULA E MOSTRA VALOR TOTAL
         const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
         document.getElementById("totalValor").textContent = total.toFixed(2).replace(".",",");
     }
@@ -593,29 +629,32 @@
     function diminuirQtd(idx) {
         if (carrinho[idx].quantidade > 1) carrinho[idx].quantidade--;
         else carrinho.splice(idx, 1);
-        atualizarContador(); atualizarCarrinho();
+        salvarCarrinho();
+        atualizarCarrinho();
     }
     function aumentarQtd(idx) {
         carrinho[idx].quantidade++;
-        atualizarContador(); atualizarCarrinho();
+        salvarCarrinho();
+        atualizarCarrinho();
     }
     function removerItem(idx) {
         carrinho.splice(idx, 1);
-        atualizarContador(); atualizarCarrinho();
+        salvarCarrinho();
+        atualizarCarrinho();
     }
 
-    // 💳 TELA DE PAGAMENTO
+    // 💳 PAGAMENTO
     function abrirPagamento() {
         if (carrinho.length === 0) { alert("🛒 Carrinho vazio!"); return; }
         document.getElementById('modalPagamento').classList.add('ativo');
         document.getElementById('formPagamento').style.display = 'block';
         document.getElementById('sucessoPedido').classList.remove('mostrar');
         
-        // Atualiza chave Pix e link de pagamento
+        // Atualiza chave e link
         document.getElementById('chavePixExibir').textContent = configs.chavePix;
         document.getElementById('linkPagamentoExibir').href = configs.linkPagamentoCredito;
         
-        // Atualiza resumo
+        // Resumo do pedido
         const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
         document.getElementById('resumoItens').innerHTML = carrinho.map(i => `
             <div class="item-resumo">
@@ -628,7 +667,7 @@
 
     function fecharPagamento() {
         document.getElementById('modalPagamento').classList.remove('ativo');
-        // Limpar campos
+        // Limpa campos
         document.getElementById('clienteNome').value = "";
         document.getElementById('clienteCpf').value = "";
         document.getElementById('clienteTel').value = "";
@@ -647,29 +686,21 @@
     function atualizarBotoesPagamento() {
         document.querySelectorAll('.pag-btn').forEach(btn => btn.classList.remove('ativo'));
         event.target.classList.add('ativo');
-        
-        if (formaPagamento === 'pix') {
-            document.getElementById('pixInfo').classList.add('mostrar');
-            document.getElementById('creditoInfo').classList.remove('mostrar');
-        } else {
-            document.getElementById('pixInfo').classList.remove('mostrar');
-            document.getElementById('creditoInfo').classList.add('mostrar');
-        }
+        document.getElementById('pixInfo').classList.toggle('mostrar', formaPagamento === 'pix');
+        document.getElementById('creditoInfo').classList.toggle('mostrar', formaPagamento === 'credito');
     }
 
     function confirmarPedido() {
-        // Validação
         const nome = document.getElementById('clienteNome').value.trim();
         const cpf = document.getElementById('clienteCpf').value.trim();
         const telefone = document.getElementById('clienteTel').value.trim();
         const endereco = document.getElementById('clienteEndereco').value.trim();
 
         if (!nome || !cpf || !telefone || !endereco) {
-            alert("⚠️ Preencha todos os dados obrigatórios!");
+            alert("⚠️ Preencha todos os dados!");
             return;
         }
 
-        // Salvar pedido no Firebase
         const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
         const pedido = {
             cliente: {
@@ -685,20 +716,19 @@
         };
 
         db.ref('pedidos').push(pedido).then(() => {
-            // Mostrar sucesso
             document.getElementById('formPagamento').style.display = 'none';
             document.getElementById('sucessoPedido').classList.add('mostrar');
             document.getElementById('nomeCliente').textContent = nome;
-            // Limpar carrinho
+            // ✅ LIMPA CARRINHO APÓS COMPRA
             carrinho = [];
-            atualizarContador();
+            salvarCarrinho();
         }).catch(e => alert("❌ Erro: " + e.message));
     }
 
-    // 📋 CARREGAR PEDIDOS (ADMIN)
+    // 📋 PEDIDOS
     function carregarPedidos() {
         if (!adminLogado) {
-            document.getElementById('listaPedidos').innerHTML = '<p class="aviso">🔐 Faça login como administrador para ver os pedidos.</p>';
+            document.getElementById('listaPedidos').innerHTML = '<p class="aviso">🔐 Faça login como administrador.</p>';
             return;
         }
         if (!db) return;
@@ -709,7 +739,7 @@
             const container = document.getElementById('listaPedidos');
             
             if (lista.length === 0) {
-                container.innerHTML = '<p class="aviso">📭 Nenhum pedido recebido ainda.</p>';
+                container.innerHTML = '<p class="aviso">📭 Nenhum pedido recebido.</p>';
                 return;
             }
 
@@ -729,7 +759,9 @@
         });
     }
 
+    // 🚀 INICIALIZAÇÃO
     window.onload = () => { 
+        atualizarContador(); // ✅ Atualiza contagem ao carregar
         if (db) {
             carregarProdutos();
             carregarConfigs();

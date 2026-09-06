@@ -4,35 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diniz Modas — Moda Íntima</title>
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: #f7f7f7; padding: 15px; max-width: 950px; margin: auto; }
 
-        header {
-            background: linear-gradient(135deg, #8B0080, #c72fc7);
-            color: white; text-align: center; padding: 20px; border-radius: 12px;
-            margin-bottom: 15px; position: relative;
+        /* 📌 MENU FIXO NO TOPO */
+        .menu-topo-fixo {
+            position: sticky; top: 0; z-index: 100; background: linear-gradient(135deg, #8B0080, #c72fc7);
+            padding: 10px 15px; border-radius: 0 0 12px 12px; margin: -15px -15px 15px -15px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
-        h1 { font-size: 22px; }
-
-        /* 📱 BOTÃO MENU — AGORA VISÍVEL! */
         .menu-toggle {
-            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-            background: white; color: #8B0080; border: none;
-            font-size: 26px; padding: 8px 14px; border-radius: 8px;
-            cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: white; color: #8B0080; border: none; font-size: 24px;
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold;
         }
-        .menu-toggle:hover { background: #f3e5f5; }
+        .titulo-topo { color: white; font-size: 16px; font-weight: bold; }
+        .carrinho-topo {
+            background: #ffc107; color: #000; border: none; padding: 6px 10px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;
+        }
 
         /* 📋 MENU LATERAL */
-        .sidebar-fundo {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 250; display: none;
-        }
+        .sidebar-fundo { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 250; display: none; }
         .sidebar-fundo.ativo { display: block; }
-
         .sidebar {
             position: fixed; top: 0; left: 0; height: 100vh; width: 280px;
             background: white; box-shadow: 2px 0 15px rgba(0,0,0,0.15);
@@ -40,85 +37,84 @@
             padding: 20px; overflow-y: auto;
         }
         .sidebar.aberto { transform: translateX(0); }
-
-        .fechar-sidebar {
-            position: absolute; top: 15px; right: 15px; font-size: 28px;
-            background: none; border: none; cursor: pointer; color: #888;
-        }
-        .fechar-sidebar:hover { color: #000; }
-
+        .fechar-sidebar { position: absolute; top: 15px; right: 15px; font-size: 28px; background: none; border: none; cursor: pointer; color: #888; }
         .sidebar h2 { color: #8B0080; font-size: 20px; margin-bottom: 25px; text-align: center; }
         .btn-menu-lateral {
-            width: 100%; padding: 14px; margin-bottom: 10px; border: none;
+            width: 100%; padding: 13px; margin-bottom: 10px; border: none;
             border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;
-            background: #f3e5f5; color: #8B0080; text-align: left; transition: all 0.2s;
+            background: #f3e5f5; color: #8B0080; text-align: left;
         }
-        .btn-menu-lateral:hover { background: #e8d5eb; }
-        .btn-sair { background: #dc3545; color: white; margin-top: 20px; text-align: center; }
+        .btn-sair { background: #dc3545; color: white; margin-top: 20px; }
         .escondido { display: none !important; }
 
         /* 🔐 SENHA ADMIN */
         .senha-box {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            z-index: 400; width: 90%; max-width: 350px; display: none;
+            background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 400; width: 90%; max-width: 340px; display: none;
         }
         .senha-box.ativo { display: block; }
         .senha-box h3 { color: #8B0080; margin-bottom: 15px; text-align: center; }
-        .senha-box input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .senha-box button { width: 100%; padding: 12px; background: #8B0080; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .senha-box input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .senha-box button { width: 100%; padding: 12px; background: #8B0080; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
         .senha-box .fechar { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #888; }
 
-        /* TOPO */
-        .menu-topo { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .btn-menu { padding: 10px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.08); font-size: 15px; }
-        .btn-menu.ativo { background: #8B0080; color: white; }
-        .carrinho-btn { margin-left: auto; background: #ffc107; color: #000; }
+        header { text-align: center; background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        h1 { font-size: 20px; color: #8B0080; margin-bottom: 5px; }
 
         .secao { display: none; }
         .secao.ativa { display: block; }
 
-        /* PRODUTOS */
-        .grade-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        /* 📦 PRODUTOS */
+        .grade-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
         .card-produto { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
-        .produto-img { width: 100%; height: 200px; object-fit: cover; background: #f3e5f5; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+        .produto-img { width: 100%; height: 180px; background: #f3e5f5; display: flex; align-items: center; justify-content: center; font-size: 45px; }
         .produto-img img { width: 100%; height: 100%; object-fit: cover; }
-        .produto-info { padding: 15px; }
+        .produto-info { padding: 14px; }
         .produto-nome { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
-        .produto-preco { font-size: 22px; font-weight: bold; color: #8B0080; margin: 8px 0; }
-        .estoque { font-size: 13px; color: #28a745; margin-bottom: 12px; }
+        .produto-preco { font-size: 20px; font-weight: bold; color: #8B0080; margin: 6px 0; }
+        .estoque { font-size: 13px; color: #28a745; margin-bottom: 10px; }
         .estoque.baixo { color: #e67e22; }
 
+        /* 🔘 BOTÕES MENORES — CONFORME PEDIDO! */
         .btn-comprar-agora {
             width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7);
-            color: white; font-size: 18px; font-weight: bold; border: none;
-            padding: 14px; border-radius: 10px; cursor: pointer; margin-bottom: 8px;
+            color: white; font-size: 15px; font-weight: bold; border: none;
+            padding: 10px; border-radius: 8px; cursor: pointer; margin-bottom: 6px;
         }
         .btn-comprar-agora:disabled { background: #ccc; cursor: not-allowed; }
         .btn-adicionar {
             width: 100%; background: #28a745; color: white;
-            font-size: 15px; font-weight: bold; border: none;
-            padding: 10px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: bold; border: none;
+            padding: 8px; border-radius: 8px; cursor: pointer;
         }
         .btn-adicionar:disabled { background: #ccc; cursor: not-allowed; }
 
         /* FORM CADASTRO */
         .form-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
-        .form-box h2 { color: #8B0080; margin-bottom: 15px; font-size: 18px; }
+        .form-box h2 { color: #8B0080; margin-bottom: 18px; font-size: 18px; text-align: center; }
         .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        input, select, button { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .btn-principal { background: #8B0080; color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; font-size: 16px; width: 100%; margin-top: 10px; }
-        .area-foto { width: 150px; height: 150px; border: 2px dashed #8B0080; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 15px; background: #f9f0f9; overflow: hidden; }
+        input, select, button { padding: 11px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; }
+        .btn-principal { background: #8B0080; color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; font-size: 16px; border-radius: 8px; width: 100%; margin-top: 10px; }
+        .area-foto { 
+            width: 150px; height: 150px; border: 3px dashed #8B0080; border-radius: 12px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: pointer; margin: 0 auto 18px auto; background: #f9f0f9; overflow: hidden;
+        }
         .area-foto img { width: 100%; height: 100%; object-fit: cover; }
         input[type="file"] { display: none; }
         .aviso { text-align: center; color: #888; padding: 30px; }
-        .erro { color: #dc3545; background: #ffebee; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
+        .total { font-size: 20px; font-weight: bold; color: #8B0080; padding: 15px; background: white; border-radius: 10px; margin-top: 15px; text-align: right; }
     </style>
 </head>
 <body>
 
-<!-- 📱 BOTÃO MENU — AGORA VISÍVEL! -->
-<button class="menu-toggle" onclick="abrirMenuLateral()">☰</button>
+<!-- 📌 MENU FIXO NO TOPO -->
+<div class="menu-topo-fixo">
+    <button class="menu-toggle" onclick="abrirMenuLateral()">☰</button>
+    <span class="titulo-topo">💜 Diniz Modas</span>
+    <button class="carrinho-topo" onclick="abrirSecao('carrinho')">🛒 <span id="contarCarrinho">0</span></button>
+</div>
 
 <!-- 📋 MENU LATERAL -->
 <div class="sidebar-fundo" id="fundoSidebar" onclick="fecharMenuLateral()"></div>
@@ -129,7 +125,7 @@
     <button class="btn-menu-lateral" onclick="abrirSecao('carrinho'); fecharMenuLateral();">🛒 Carrinho</button>
     <button class="btn-menu-lateral" id="btnAreaAdmin" onclick="abrirSenhaAdmin(); fecharMenuLateral();">🔐 Área Administrativa</button>
     
-    <div id="menuAdminItens" class="escondido" style="margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+    <div id="menuAdminItens" class="escondido" style="margin-top:20px; border-top:2px solid #eee; padding-top:20px;">
         <button class="btn-menu-lateral" onclick="abrirSecao('cadastrar'); fecharMenuLateral();">➕ Cadastrar Produto</button>
         <button class="btn-menu-lateral" onclick="abrirSecao('pedidos'); fecharMenuLateral();">📋 Pedidos</button>
         <button class="btn-menu-lateral btn-sair" onclick="sairAdmin(); fecharMenuLateral();">🚪 Sair</button>
@@ -144,19 +140,12 @@
     <button onclick="verificarSenhaAdmin()">Entrar</button>
 </div>
 
-<header>
-    <h1>💜 Diniz Modas</h1>
-    <p>Moda Íntima & Lingerie</p>
-</header>
-
-<div class="menu-topo">
-    <button class="btn-menu ativo" onclick="abrirSecao('loja')">🛍️ Loja</button>
-    <button class="btn-menu carrinho-btn" onclick="abrirSecao('carrinho')">🛒 Carrinho (<span id="contarCarrinho">0</span>)</button>
-</div>
-
 <!-- 🛍️ LOJA -->
 <div id="sec-loja" class="secao ativa">
-    <div id="mensagemFirebase" style="display:none;" class="erro"></div>
+    <header>
+        <h1>💜 Diniz Modas</h1>
+        <p>Moda Íntima • Cuecas • Meias • Camisolas • Baby Doll</p>
+    </header>
     <div class="grade-produtos" id="gradeProdutos">
         <p class="aviso">🔄 Carregando produtos...</p>
     </div>
@@ -168,8 +157,7 @@
         <h2>➕ Cadastrar Produto</h2>
         <div class="area-foto" onclick="document.getElementById('fotoProd').click()">
             <img id="previewFoto" src="" alt="" style="display:none;">
-            <span id="iconeFoto" style="font-size:30px;">📷</span>
-            <p style="font-size:12px; margin-top:5px;">Clique para foto</p>
+            <span id="iconeFoto" style="font-size:35px;">📷</span>
         </div>
         <input type="file" id="fotoProd" accept="image/*" onchange="previaFoto(this)">
         
@@ -188,8 +176,8 @@
             <input type="number" id="precoProd" step="0.01" placeholder="Preço R$">
         </div>
         <div class="linha">
-            <input type="number" id="estoqueProd" placeholder="Quantidade em estoque" min="1">
-            <input type="number" id="estoqueBaixo" placeholder="Aviso estoque baixo" min="1" value="5">
+            <input type="number" id="estoqueProd" placeholder="Estoque" min="1">
+            <input type="number" id="estoqueBaixo" placeholder="Estoque baixo" min="1" value="5">
         </div>
         <button class="btn-principal" onclick="cadastrarProduto()">✅ Cadastrar Produto</button>
     </div>
@@ -200,9 +188,7 @@
     <div id="listaCarrinho">
         <p class="aviso">🛒 Carrinho vazio</p>
     </div>
-    <div class="total" style="font-size:22px; font-weight:bold; color:#8B0080; padding:15px; background:white; border-radius:10px; margin-top:15px; text-align:right;">
-        TOTAL: R$ <span id="totalValor">0,00</span>
-    </div>
+    <div class="total">TOTAL: R$ <span id="totalValor">0,00</span></div>
 </div>
 
 <!-- 📋 PEDIDOS -->
@@ -214,20 +200,14 @@
 </div>
 
 <script>
-    // ==============================================================
-    // 🔑 CONFIGURAÇÕES
-    // ==============================================================
-    const SENHA_ADMIN = "290413"; // ← Senha do Administrador
+    const SENHA_ADMIN = "290413";
     let adminLogado = false;
     let fotoBase64 = "";
     let carrinho = [];
     let listaProdutos = [];
     let db = null;
-    let firebaseInicializado = false;
 
-    // ==============================================================
-    // 🔥 INICIALIZAR FIREBASE — CORRIGIDO!
-    // ==============================================================
+    // 🔥 FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDjGThz261r_87sqROqoRWoFQ3zlIyQ-_4",
         authDomain: "diniz-modas.firebaseapp.com",
@@ -235,33 +215,15 @@
         projectId: "diniz-modas",
         storageBucket: "diniz-modas.firebasestorage.app",
         messagingSenderId: "367521150092",
-        appId: "1:367521150092:web:2bd02eade17fbc8b5ab7a9",
-        measurementId: "G-8D7Z35P5XS"
+        appId: "1:367521150092:web:2bd02eade17fbc8b5ab7a9"
     };
-
-    function mostrarMensagem(texto, isErro = false) {
-        const el = document.getElementById('mensagemFirebase');
-        el.textContent = texto;
-        el.style.display = 'block';
-        el.style.background = isErro ? '#ffebee' : '#e8f5e9';
-        el.style.color = isErro ? '#c62828' : '#2e7d32';
-    }
 
     try {
         const app = firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        firebaseInicializado = true;
-        console.log("✅ Firebase conectado!");
-        // Carregar produtos logo ao iniciar
-        setTimeout(() => carregarProdutos(), 500);
-    } catch (erro) {
-        console.error("❌ Erro Firebase:", erro);
-        mostrarMensagem("⚠️ Erro ao conectar: " + erro.message, true);
-    }
+    } catch (e) { console.error("Erro Firebase:", e); }
 
-    // ==============================================================
-    // 📋 MENU LATERAL — FUNCIONANDO!
-    // ==============================================================
+    // 📋 MENU LATERAL
     function abrirMenuLateral() {
         document.getElementById('menuLateral').classList.add('aberto');
         document.getElementById('fundoSidebar').classList.add('ativo');
@@ -271,28 +233,22 @@
         document.getElementById('fundoSidebar').classList.remove('ativo');
     }
 
-    // ==============================================================
-    // 🔐 LOGIN ADMIN
-    // ==============================================================
+    // 🔐 ADMIN
     function abrirSenhaAdmin() {
         if (adminLogado) return;
         document.getElementById('caixaSenhaAdmin').classList.add('ativo');
-        setTimeout(() => document.getElementById('senhaAdmin').focus(), 100);
     }
     function fecharSenhaAdmin() {
         document.getElementById('caixaSenhaAdmin').classList.remove('ativo');
         document.getElementById('senhaAdmin').value = "";
     }
     function verificarSenhaAdmin() {
-        const senha = document.getElementById('senhaAdmin').value;
-        if (senha === SENHA_ADMIN) {
+        if (document.getElementById('senhaAdmin').value === SENHA_ADMIN) {
             adminLogado = true;
             fecharSenhaAdmin();
             document.getElementById('menuAdminItens').classList.remove('escondido');
             alert("✅ Bem-vindo, Administrador!");
-        } else {
-            alert("❌ Senha incorreta!");
-        }
+        } else alert("❌ Senha incorreta!");
     }
     function sairAdmin() {
         adminLogado = false;
@@ -301,33 +257,19 @@
         abrirSecao('loja');
     }
 
-    // ==============================================================
     // 🧭 NAVEGAÇÃO
-    // ==============================================================
     function abrirSecao(nome) {
         document.querySelectorAll(".secao").forEach(s => s.classList.remove("ativa"));
-        document.querySelectorAll(".btn-menu").forEach(b => b.classList.remove("ativo"));
-        
-        document.querySelectorAll(".btn-menu").forEach(btn => {
-            if ((nome === 'loja' && btn.textContent.includes('Loja')) ||
-                (nome === 'carrinho' && btn.textContent.includes('Carrinho'))) {
-                btn.classList.add("ativo");
-            }
-        });
-        
         document.getElementById(`sec-${nome}`).classList.add("ativa");
-        
         if (nome === 'loja') carregarProdutos();
         if (nome === 'carrinho') atualizarCarrinho();
     }
 
-    // ==============================================================
-    // 📸 PREVISÃO DE FOTO
-    // ==============================================================
+    // 📸 FOTO
     function previaFoto(input) {
         if (input.files && input.files[0]) {
             const leitor = new FileReader();
-            leitor.onload = function(e) {
+            leitor.onload = e => {
                 document.getElementById("previewFoto").src = e.target.result;
                 document.getElementById("previewFoto").style.display = "block";
                 document.getElementById("iconeFoto").style.display = "none";
@@ -337,15 +279,9 @@
         }
     }
 
-    // ==============================================================
-    // ➕ CADASTRAR PRODUTO — COM FOTO!
-    // ==============================================================
+    // ➕ CADASTRAR
     function cadastrarProduto() {
-        if (!firebaseInicializado || !db) {
-            alert("⚠️ Aguarde o carregamento ou recarregue a página!");
-            return;
-        }
-
+        if (!db) { alert("⚠️ Recarregue a página!"); return; }
         const nome = document.getElementById("nomeProd").value.trim();
         const cat = document.getElementById("catProd").value;
         const tam = document.getElementById("tamProd").value.trim() || "Único";
@@ -353,60 +289,35 @@
         const estoque = parseInt(document.getElementById("estoqueProd").value) || 10;
         const estoqueMinimo = parseInt(document.getElementById("estoqueBaixo").value) || 5;
 
-        if (!nome || !preco) {
-            alert("⚠️ Preencha nome e preço!");
-            return;
-        }
+        if (!nome || !preco) { alert("⚠️ Preencha nome e preço!"); return; }
 
-        const novoProduto = {
-            nome: nome,
-            categoria: cat,
-            tamanho: tam,
-            preco: preco,
-            estoque: estoque,
-            estoqueMinimo: estoqueMinimo,
-            imagem: fotoBase64,
-            dataCadastro: new Date().toISOString()
-        };
-
-        db.ref('produtos').push(novoProduto)
-            .then(() => {
-                alert("✅ Produto cadastrado com sucesso!");
-                // Limpar formulário
-                document.getElementById("nomeProd").value = "";
-                document.getElementById("tamProd").value = "";
-                document.getElementById("precoProd").value = "";
-                document.getElementById("estoqueProd").value = "";
-                document.getElementById("previewFoto").style.display = "none";
-                document.getElementById("iconeFoto").style.display = "block";
-                fotoBase64 = "";
-                abrirSecao('loja');
-            })
-            .catch(err => {
-                alert("❌ Erro ao cadastrar: " + err.message);
-            });
+        db.ref('produtos').push({
+            nome, categoria: cat, tamanho: tam, preco, estoque, estoqueMinimo,
+            imagem: fotoBase64, dataCadastro: new Date().toISOString()
+        }).then(() => {
+            alert("✅ Cadastrado com sucesso!");
+            document.getElementById("nomeProd").value = "";
+            document.getElementById("precoProd").value = "";
+            document.getElementById("previewFoto").style.display = "none";
+            document.getElementById("iconeFoto").style.display = "block";
+            fotoBase64 = "";
+            abrirSecao('loja');
+        }).catch(e => alert("❌ Erro: " + e.message));
     }
 
-    // ==============================================================
-    // 📦 CARREGAR PRODUTOS — CORRIGIDO!
-    // ==============================================================
+    // 📦 CARREGAR PRODUTOS
     function carregarProdutos() {
-        if (!firebaseInicializado || !db) {
-            document.getElementById("gradeProdutos").innerHTML = 
-                '<p class="aviso">⏳ Aguardando conexão... recarregue em 10s.</p>';
+        if (!db) {
+            document.getElementById("gradeProdutos").innerHTML = '<p class="aviso">⏳ Aguardando conexão...</p>';
             return;
         }
-
-        db.ref('produtos').on('value', (snapshot) => {
+        db.ref('produtos').on('value', snapshot => {
             const produtos = snapshot.val() || {};
             listaProdutos = Object.entries(produtos).map(([id, p]) => ({id, ...p}));
             const container = document.getElementById("gradeProdutos");
             
             if (listaProdutos.length === 0) {
-                container.innerHTML = `
-                    <p class="aviso">📦 Nenhum produto cadastrado ainda.<br>
-                    <strong>Abra o menu ☰ → Área Administrativa → Cadastrar Produto</strong></p>
-                `;
+                container.innerHTML = '<p class="aviso">📦 Nenhum produto cadastrado.<br>Menu → Área Administrativa → Cadastrar</p>';
                 return;
             }
 
@@ -419,6 +330,46 @@
                     <div class="produto-info">
                         <div class="produto-nome">${p.nome}</div>
                         <div class="produto-preco">R$ ${p.preco.toFixed(2).replace(".",",")}</div>
-                        <div class="estoque ${p.estoque <= p.estoqueMinimo ? 'baixo' : ''}">
-                            ${p.estoque} disponíveis
-                     
+                        <div class="estoque ${p.estoque <= p.estoqueMinimo ? 'baixo' : ''}">${p.estoque} disponíveis</div>
+                        <button class="btn-comprar-agora" onclick="adicionarCarrinho('${p.id}')">🛒 Comprar</button>
+                        <button class="btn-adicionar" onclick="adicionarCarrinho('${p.id}')">➕ Adicionar</button>
+                    </div>
+                </div>
+            `).join("");
+        });
+    }
+
+    // 🛒 CARRINHO
+    function adicionarCarrinho(id) {
+        const prod = listaProdutos.find(p => p.id === id);
+        if (!prod) return;
+        const existe = carrinho.find(i => i.id === id);
+        existe ? existe.quantidade++ : carrinho.push({...prod, quantidade: 1});
+        atualizarContador();
+        alert(`✅ ${prod.nome} adicionado!`);
+    }
+    function atualizarContador() {
+        document.getElementById("contarCarrinho").textContent = carrinho.reduce((s,i) => s + i.quantidade, 0);
+    }
+    function atualizarCarrinho() {
+        const container = document.getElementById("listaCarrinho");
+        if (carrinho.length === 0) {
+            container.innerHTML = '<p class="aviso">🛒 Carrinho vazio</p>';
+            document.getElementById("totalValor").textContent = "0,00";
+            return;
+        }
+        container.innerHTML = carrinho.map(item => `
+            <div style="background:white; padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div><strong>${item.nome}</strong><br>R$ ${item.preco.toFixed(2).replace(".",",")} x ${item.quantidade}</div>
+                <div><strong>R$ ${(item.preco * item.quantidade).toFixed(2).replace(".",",")}</strong></div>
+            </div>
+        `).join("");
+        const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+        document.getElementById("totalValor").textContent = total.toFixed(2).replace(".",",");
+    }
+
+    window.onload = () => { if (db) carregarProdutos(); };
+</script>
+
+</body>
+</html>

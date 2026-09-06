@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diniz Modas — Moda Íntima & Lingerie</title>
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjGThz261r_87sqROqoRWoFQ3zlIyQ-_4",
+            authDomain: "diniz-modas.firebaseapp.com",
+            projectId: "diniz-modas",
+            storageBucket: "diniz-modas.firebasestorage.app",
+            messagingSenderId: "367521150092",
+            appId: "1:367521150092:web:2bd02eade17fbc8b5ab7a9",
+            measurementId: "G-8D7Z35P5XS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.db = getDatabase(app);
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #faf5f9; padding: 12px; max-width: 1200px; margin: auto; }
+
+        header {
+            background: linear-gradient(135deg, #8B0080, #c72fc7);
+            color: white; text-align: center; padding: 20px; border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        h1 { font-size: 24px; }
+        .admin-btn {
+            position: fixed; top: 10px; right: 10px; background: white; color: #8B0080;
+            border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 100;
+        }
+
+        .login-box {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 200; width: 90%; max-width: 350px; display: none;
+        }
+        .login-box.ativo { display: block; }
+        .login-box h2 { color: #8B0080; margin-bottom: 15px; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
+        .login-box button { width: 100%; padding: 12px; background: #8B0080; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .fechar { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
+
+        .menu-topo { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .btn-menu { padding: 10px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+        .btn-menu.ativo { background: #8B0080; color: white; }
+        .carrinho-btn { margin-left: auto; background: #ffc107; color: #000; }
+
+        .secao { display: none; }
+        .secao.ativa { display: block; }
+
+        .grade-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .card-produto { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
+        .produto-img { width: 100%; height: 200px; object-fit: cover; background: #f3e5f5; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+        .produto-img img { width: 100%; height: 100%; object-fit: cover; }
+        .produto-info { padding: 15px; }
+        .produto-nome { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .produto-preco { font-size: 20px; font-weight: bold; color: #8B0080; margin: 8px 0; }
+        .estoque { font-size: 13px; color: #28a745; margin-bottom: 8px; }
+        .estoque.baixo { color: #e67e22; }
+        .btn-comprar { width: 100%; background: #28a745; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-indisponivel { background: #ccc; cursor: not-allowed; }
+
+        .form-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .form-box h2 { color: #8B0080; margin-bottom: 15px; font-size: 18px; }
+        .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        input, select, button, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .btn-principal { background: #8B0080; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .area-foto { width: 150px; height: 150px; border: 2px dashed #8B0080; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 15px; background: #f9f0f9; overflow: hidden; }
+        .area-foto img { width: 100%; height: 100%; object-fit: cover; }
+        input[type="file"] { display: none; }
+
+        .pedido-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #8B0080; }
+        .pedido-novo { border-left-color: #e74c3c; }
+        .pedido-cabecalho { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
+        .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; color: white; }
+        .status-novo { background: #e74c3c; }
+        .status-preparando { background: #f39c12; }
+        .status-enviado { background: #3498db; }
+        .status-entregue { background: #28a745; }
+
+        .carrinho-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; }
+        .total { text-align: right; font-size: 22px; font-weight: bold; color: #8B0080; padding: 15px; background: white; border-radius: 10px; margin-top: 15px; }
+        .btn-finalizar { width: 100%; background: #8B0080; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .aviso { text-align: center; color: #888; padding: 30px; }
+        .escondido { display: none !important; }
+
+        .pagamento-box { background: white; padding: 20px; border-radius: 12px; margin-top: 20px; }
+        .pagamento-box h3 { color: #8B0080; margin-bottom: 15px; }
+        .opcao-pagamento {
+            border: 2px solid #ddd; border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
+        }
+        .opcao-pagamento.selecionado { border-color: #8B0080; background: #f9f0f9; }
+        .opcao-pagamento strong { font-size: 16px; display: block; margin-bottom: 5px; }
+        .pix-chave {
+            background: #fff3cd; border: 1px dashed #d6b656; padding: 12px; border-radius: 8px; margin-top: 10px; word-break: break-all; font-family: monospace;
+        }
+        .btn-pagar-cartao {
+            display: block; text-align: center; background: #00c853; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px;
+        }
+        .dados-cliente-box {
+            background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 15px;
+        }
+        .valor-total-pagamento {
+            background: #f0e6f0; padding: 12px; border-radius: 8px; text-align: center; font-size: 20px; font-weight: bold; color: #8B0080; margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<button class="admin-btn" onclick="abrirLogin()">⚙️ Admin</button>
+
+<div class="login-box" id="telaLogin">
+    <span class="fechar" onclick="fecharLogin()">&times;</span>
+    <h2>🔐 Área Administrativa</h2>
+    <input type="password" id="senhaAdmin" placeholder="Digite sua senha">
+    <button onclick="fazerLogin()">Entrar</button>
+    <p style="font-size:12px; color:#888; margin-top:10px; text-align:center;">Senha padrão: 123456 (altere depois!)</p>
+</div>
+
+<header>
+    <h1>💜 Diniz Modas</h1>
+    <p>Moda Íntima & Lingerie — Cuecas • Meias • Camisolas • Baby Doll</p>
+</header>
+
+<div class="menu-topo">
+    <button class="btn-menu ativo" onclick="abrirSecao('loja')">🛍️ Loja</button>
+    <button class="btn-menu escondido" id="menuCadastrar" onclick="abrirSecao('cadastrar')">➕ Cadastrar</button>
+    <button class="btn-menu escondido" id="menuPedidos" onclick="abrirSecao('pedidos')">📋 Pedidos</button>
+    <button class="btn-menu escondido" id="menuEstoque" onclick="abrirSecao('estoque')">📦 Estoque</button>
+    <button class="btn-menu carrinho-btn" onclick="abrirSecao('carrinho')">🛒 Carrinho (<span id="contarCarrinho">0</span>)</button>
+</div>
+
+<div id="sec-loja" class="secao ativa">
+    <div class="grade-produtos" id="gradeProdutos"></div>
+</div>
+
+<div id="sec-cadastrar" class="secao">
+    <div class="form-box">
+        <h2>➕ Cadastrar Produto</h2>
+        <div class="area-foto" onclick="document.getElementById('fotoProd').click()">
+            <img id="previewFoto" src="" alt="">
+            <span id="iconeFoto" style="font-size:30px;">📷</span>
+            <p style="font-size:12px; margin-top:5px;">Clique para foto</p>
+        </div>
+        <input type="file" id="fotoProd" accept="image/*" onchange="previaFoto(this)">
+        
+        <div class="linha">
+            <input type="text" id="nomeProd" placeholder="Nome do produto">
+            <select id="catProd">
+                <option value="cueca">Cueca</option>
+                <option value="meia">Meia</option>
+                <option value="camisola">Camisola</option>
+                <option value="babydoll">Baby Doll</option>
+                <option value="outro">Outro</option>
+            </select>
+        </div>
+        <div class="linha">
+            <input type="text" id="tamProd" placeholder="Tamanho (P, M, G, GG)">
+            <input type="number" id="precoProd" step="0.01" placeholder="Preço R$">
+        </div>
+        <div class="linha">
+            <input type="number" id="estoqueProd" placeholder="Quantidade em estoque" min="1">
+            <input type="number" id="estoqueBaixo" placeholder="Aviso estoque baixo" min="1" value="5">
+        </div>
+        <button class="btn-principal" onclick="cadastrarProduto()">✅ Cadastrar</button>
+    </div>
+</div>
+
+<div id="sec-pedidos" class="secao">
+    <div class="form-box">
+        <h2>📋 Pedidos Recebidos</h2>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <span>Total: <strong id="totalPedidos">0</strong></span>
+            <span style="color:#e74c3c;">Novos: <strong id="novosPedidos">0</strong></span>
+        </div>
+        <div id="listaPedidos"></div>
+    </div>
+</div>
+
+<div id="sec-estoque" class="secao">
+    <div class="form-box">
+        <h2>📦 Controle de Estoque</h2>
+        <div id="listaEstoque"></div>
+    </div>
+</div>
+
+<div id="sec-carrinho" class="secao">
+    <div id="listaCarrinho">
+        <p class="aviso">🛒 Carrinho vazio</p>
+    </div>
+    <div class="total">
+        TOTAL: R$ <span id="totalValor">0,00</span>
+    </div>
+
+    <div class="dados-cliente-box" id="caixaDadosCliente" style="display:none;">
+        <h3>📝 Seus Dados</h3>
+        <div class="linha">
+            <input type="text" id="clienteNome" placeholder="Seu nome completo">
+            <input type="tel" id="clienteTelefone" placeholder="WhatsApp (com DDD)">
+        </div>
+        <textarea id="clienteEndereco" placeholder="Endereço completo — Rua, número, bairro, cidade/UF" style="width:100%; margin-top:8px; height:80px;"></textarea>
+    </div>
+
+    <div class="pagamento-box" id="caixaPagamento" style="display:none;">
+        <h3>💳 Forma de Pagamento</h3>
+        
+        <!-- 💰 VALOR TOTAL APARECE AQUI AUTOMATICAMENTE -->
+        <div class="valor-total-pagamento">
+            Valor a Pagar: R$ <span id="valorPagamento">0,00</span>
+        </div>
+
+        <div class="opcao-pagamento" id="opcaoPix" onclick="escolherPagamento('pix')">
+            <strong>💸 PIX — À vista</strong>
+            <p>Copia e cola no app do banco • Confirmação rápida</p>
+            <div class="pix-chave" id="chavePixDisplay">
+                🔑 Configure sua chave PIX no código!
+            </div>
+        </div>
+
+        <div class="opcao-pagamento" id="opcaoCartao" onclick="escolherPagamento('cartao')">
+            <strong>💳 Cartão de Crédito / Débito</strong>
+            <p>Pague com cartão — valor total já calculado!</p>
+            <a class="btn-pagar-cartao" id="linkCartao" href="#" target="_blank">🔗 Ir para Pagamento</a>
+        </div>
+
+        <input type="hidden" id="formaPagamento" value="">
+    </div>
+
+    <button class="btn-finalizar" onclick="abrirDadosPagamento()" id="btnIrPagamento">
+        ▶️ Informar Dados e Escolher Pagamento
+    </button>
+    <button class="btn-finalizar escondido" id="btnConfirmarPedido" onclick="confirmarPedido()">
+        ✅ Confirmar Pedido
+    </button>
+</div>
+
+<script type="module">
+    const { db } = window;
+    const { ref, push, onValue, update, remove, get } = await import("https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js");
+
+    // ==============================================================
+    // 🔧 SUAS CONFIGURAÇÕES — COLOQUE SEUS DADOS AQUI!
+    // ==============================================================
+    const SENHA_ADMIN = "290413"; // ← Mude sua senha de admin!
+    
+    // 💸 CHAVE PIX — COLOQUE A SUA ABAIXO!
+    const CHAVE_PIX = "00020126580014BR.GOV.BCB.PIX0136f5cc71a3-9e60-48e7-8b09-f8e810c1ba1c5204000053039865802BR5922Marcelo Diniz de Souza6009SAO PAULO62140510o8GUCCu3Ec6304ACD3"; 
+    // Exemplo: const CHAVE_PIX = "123.456.789-09"; ou "seuemail@email.com" ou "47999998888"
+    
+    // 💳 LINK DE PAGAMENTO (Mercado Pago, PicPay, PagSeguro, etc.)
+    // ⚠️ IMPORTANTE: Deixe o link TERMINANDO COM ?value= ou ?amount=
+    // O sistema vai adicionar o valor TOTAL automaticamente!
+    const LINK_CARTAO_BASE = "https://seu-link-de-pagamento-aqui?value="; 
+    // Exemplo Mercado Pago: "https://link.mercadopago.com.br/lojadinizmodas?amount="
+    // Exemplo PicPay: "https://picpay.me/seu-nome?value="
+    // ==============================================================
+
+    let adminLogado = false;
+    let fotoBase64 = "";
+    let carrinho = [];
+    let listaProdutos = [];
+    let pagamentoEscolhido = "";
+    let valorTotalAtual = 0;
+
+    // ============== ATUALIZAR VALOR NO PAGAMENTO ==============
+    function atualizarValorPagamento() {
+        valorTotalAtual = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+        document.getElementById('valorPagamento').textContent = valorTotalAtual.toFixed(2).replace(".",",");
+        
+        // Atualizar link do cartão COM O VALOR TOTAL!
+        const linkComValor = LINK_CARTAO_BASE + valorTotalAtual.toFixed(2).replace(".", ",");
+        document.getElementById('linkCartao').href = linkComValor;
+    }
+
+    // ============== LOGIN ADMIN ==============
+    window.abrirLogin = function() {
+        document.getElementById("telaLogin").classList.add("ativo");
+    };
+    window.fecharLogin = function() {
+        document.getElementById("telaLogin").classList.remove("ativo");
+    };
+    window.fazerLogin = function() {
+        const senha = document.getElementById("senhaAdmin").value;
+        if (senha === SENHA_ADMIN) {
+            adminLogado = true;
+            fecharLogin();
+            document.getElementById("menuCadastrar").classList.remove("escondido");
+            document.getElementById("menuPedidos").classList.remove("escondido");
+            document.getElementById("menuEstoque").classList.remove("escondido");
+            alert("✅ Bem-vindo, Administrador!");
+            carregarPedidos();
+            carregarEstoque();
+        } else {
+            alert("❌ Senha incorreta!");
+        }
+    };
+
+    // ============== NAVEGAÇÃO ==============
+    window.abrirSecao = function(nome) {
+        document.querySelectorAll(".secao").forEach(s => s.classList.remove("ativa"));
+        document.querySelectorAll(".btn-menu").forEach(b => b.classList.remove("ativo"));
+        event.target.classList.add("ativo");
+        document.getElementById(`sec-${nome}`).classList.add("ativa");
+        
+        if (nome === 'loja') carregarProdutos();
+        if (nome === 'carrinho') {
+            atualizarCarrinho();
+            atualizarValorPagamento(); // ← Atualiza valor do pagamento!
+        }
+        if (nome === 'pedidos' && adminLogado) carregarPedidos();
+        if (nome === 'estoque' && adminLogado) carregarEstoque();
+    };
+
+    // ============== FOTO ==============
+    window.previaFoto = function(input) {
+        if (input.files && input.files[0]) {
+            const leitor = new FileReader();
+            leitor.onload = e => {
+                document.getElementById("previewFoto").src = e.target.result;
+                document.getElementById("previewFoto").style.display = "block";
+                document.getElementById("iconeFoto").style.display = "none";
+                fotoBase64 = e.target.result;
+            };
+            leitor.readAsDataURL(input.files[0]);
+        }
+    };
+
+    // ============== CADASTRAR PRODUTO ==============
+    window.cadastrarProduto = async function() {
+        const nome = document.getElementById("nomeProd").value.trim();
+        const cat = document.getElementById("catProd").value;
+        const tam = document.getElementById("tamProd").value.trim() || "Único";
+        const preco = parseFloat(document.getElementById("precoProd").value);
+        const estoque = parseInt(document.getElementById("estoqueProd").value) || 10;
+        const estoqueMinimo = parseInt(document.getElementById("estoqueBaixo").value) || 5;
+
+        if (!nome || !preco) return alert("⚠️ Preencha nome e preço!");
+
+        const novoProduto = {
+            nome, categoria: cat, tamanho: tam, preco,
+            estoque, estoqueMinimo, imagem: fotoBase64 || "",
+            dataCadastro: new Date().toISOString()
+        };
+
+        await push(ref(db, 'produtos'), novoProduto);
+        alert("✅ Produto cadastrado com sucesso!");
+        
+        document.getElementById("nomeProd").value = "";
+        document.getElementById("tamProd").value = "";
+        document.getElementById("precoProd").value = "";
+        document.getElementById("estoqueProd").value = "";
+        document.getElementById("previewFoto").style.display = "none";
+        document.getElementById("iconeFoto").style.display = "block";
+        fotoBase64 = "";
+        
+        carregarProdutos();
+    };
+
+    // ============== CARREGAR PRODUTOS ==============
+    window.carregarProdutos = function() {
+        onValue(ref(db, 'produtos'), (snapshot) => {
+            const produtos = snapshot.val() || {};
+            listaProdutos = Object.entries(produtos).map(([id, p]) => ({id, ...p}));
+            const container = document.getElementById("gradeProdutos");
+            
+            if (listaProdutos.length === 0) {
+                container.innerHTML = '<p class="aviso">📦 Nenhum produto disponível.</p>';
+                return;
+            }
+
+            const icones = {cueca:"🩲", meia:"🧦", camisola:"👗", babydoll:"👙", outro:"🛍️"};
+            container.innerHTML = listaProdutos.map(p => `
+                <div class="card-produto">
+                    <div class="produto-img">
+                        ${p.imagem ? `<img src="${p.imagem}" alt="${p.nome}">` : icones[p.categoria]}
+                    </div>
+                    <div class="produto-info">
+                        <div class="produto-nome">${p.nome}</div>
+                        <div class="produto-preco">R$ ${p.preco.toFixed(2).replace(".",",")}</div>
+                        <div class="estoque ${p.estoque <= p.estoqueMinimo ? 'baixo' : ''}">
+                            ${p.estoque} disponíveis ${p.estoque <= p.estoqueMinimo ? '(poucos!)' : ''}
+                        </div>
+                        <button class="btn-comprar ${p.estoque <= 0 ? 'btn-indisponivel' : ''}" 
+                                onclick="adicionarCarrinho('${p.id}')" 
+                                ${p.estoque <= 0 ? 'disabled' : ''}>
+                            ${p.estoque <= 0 ? '❌ Indisponível' : '🛒 Adicionar'}
+                        </button>
+                    </div>
+                </div>
+            `).join("");
+        });
+    };
+
+    // ============== CARRINHO ==============
+    window.adicionarCarrinho = function(id) {
+        const prod = listaProdutos.find(p => p.id === id);
+        if (!prod || prod.estoque <= 0) return alert("⚠️ Produto sem estoque!");
+        
+        const existe = carrinho.find(i => i.id === id);
+        if (existe) existe.quantidade++;
+        else carrinho.push({...prod, quantidade: 1});
+        
+        atualizarContador();
+        alert(`✅ ${prod.nome} no carrinho!`);
+    };
+
+    window.atualizarContador = function() {
+        document.getElementById("contarCarrinho").textContent = carrinho.reduce((s,i) => s + i.quantidade, 0);
+    };
+
+    window.atualizarCarrinho = function() {
+        pagamentoEscolhido = "";
+        document.querySelectorAll('.opcao-pagamento').forEach(el => el.classList.remove('selecionado'));
+        document.getElementById('caixaDadosCliente').style.display = 'none';
+        document.getElementById('caixaPagamento').style.display = 'none';
+        document.getElementById('btnConfirmarPedido').classList.add('escondido');
+        document.getElementById('btnIrPagamento').style.display = 'block';
+
+        const container = document.getElementById("listaCarrinho");
+        if (carrinho.length === 0) {
+            container.innerHTML = '<p class="aviso">🛒 Carrinho vazio</p>';
+            document.getElementById("totalValor").textContent = "0,00";
+            return;
+        }
+
+        container.innerHTML = carrinho.map((item, idx) => `
+            <div class="carrinho-item">
+                <div>
+                    <strong>${item.nome}</strong><br>
+                    R$ ${item.preco.toFixed(2).replace(".",",")} x ${item.quantidade}
+                </div>
+                <div>
+                    <strong>R$ ${(item.preco * item.quantidade).toFixed(2).replace(".",",")}</strong><br>
+                    <button onclick="removerItem(${idx})" style="background:none; border:none; color:red; cursor:pointer;">🗑️</button>
+                </div>
+            </div>
+        `).join("");
+
+        const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+        document.getElementById("totalValor").textContent = total.toFixed(2).replace(".",",");
+    };
+
+    window.removerItem = function(idx) {
+        carrinho.splice(idx, 1);
+        atualizarCarrinho();
+        atualizarContador();
+    };
+
+    // ============== ABIR DADOS E PAGAMENTO ==============
+    window.abrirDadosPagamento = function() {
+        if (carrinho.length === 0) return alert("⚠️ Carrinho vazio!");
+        
+        document.getElementById('caixaDadosCliente').style.display = 'block';
+        document.getElementById('caixaPagamento').style.display = 'block';
+        document.getElementById('btnIrPagamento').style.display = 'none';
+        
+        // Atualiza valor TOTAL no pagamento e no link do cartão!
+        atualizarValorPagamento();
+        
+        window.scrollTo(0, document.body.scrollHeight);
+    };
+
+    window.escolherPagamento = function(tipo) {
+        pagamentoEscolhido = tipo;
+        document.getElementById('formaPagamento').value = tipo;
+        
+        document.querySelectorAll('.opcao-pagamento').forEach(el => el.classList.remove('selecionado'));
+        document.getElementById(`opcao${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`).classList.add('selecionado');
+        
+        document.getElementById('btnConfirmarPedido').classList.remove('escondido');
+        window.scrollTo(0, document.body.scrollHeight);
+    };
+
+    // ============== CONFIRMAR PEDIDO ==============
+    window.confirmarPedido = async function() {
+        const nomeCliente = document.getElementById("clienteNome").value.trim();
+        const telefone = document.getElementById("clienteTelefone").value.trim();
+        const endereco = document.getElementById("clienteEndereco").value.trim();
+        
+        if (!nomeCliente) return alert("⚠️ Digite seu nome!");
+        if (!telefone) return alert("⚠️ Digite seu WhatsApp/Telefone!");
+        if (!pagamentoEscolhido) return alert("⚠️ Escolha a forma de pagamento!");
+
+        const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
+
+        const pedido = {
+            numero: Date.now(),
+            data: new Date().toLocaleString('pt-BR'),
+            cliente: nomeCliente,
+            telefone,
+            endereco,
+            formaPagamento: pagamentoEscolhido,
+            valorTotal: total,
+            itens: carrinho.map(i => ({nome: i.nome, quantidade: i.quantidade, preco: i.preco})),
+            status: 'novo'
+        };
+
+        // Salvar pedido no Firebase
+        await push(ref(db, 'pedidos'), pedido);
+
+        // Diminuir estoque
+        for (const item of carrinho) {
+            const prodRef = ref(db, 'produtos/' + item.id);
+            const snap = await get(prodRef);
+            const prod = snap.val();
+            await update(prodRef, {estoque: prod.estoque - item.quantidade});
+        }
+
+        let mensagem = `✅ Pedido #${String(pedido.numero).slice(-6)} registrado!\nObrigado pela preferência, ${nomeCliente}! 💜\n\n💰 Valor Total: R$ ${total.toFixed(2).replace(".",",")}\n💳 Pagamento: ${pagamentoEscolhido.toUpperCase()}`;
+        
+        if (pagamentoEscolhido === 'pix') {
+            mensagem += `\n\n💸 PIX: ${CHAVE_PIX}\n\nAssim que confirmarmos o pagamento, enviamos seu pedido! 📦`;
+            alert(mensagem);
+        } else if (pagamentoEscolhido === 'cartao') {
+            mensagem += `\n\n💳 Você será redirecionado para o pagamento do valor total...`;
+            alert(mensagem);
+            // Abre o link JÁ COM O VALOR TOTAL!
+            window.open(LINK_CARTAO_BASE + total.toFixed(2).replace(".", ","), '_blank');
+        }
+
+        // Limpar carrinho
+        carrinho = [];
+        atualizarContador();
+        abrirSecao('loja');
+    };
+
+    // ============== CARREGAR PEDIDOS (ADMIN) ==============
+    window.carregarPedidos = function() {
+        onValue(ref(db, 'pedidos'), (snapshot) => {
+            const pedidos = snapshot.val() || {};
+            const lista = Object.entries(pedidos).map(([id, p]) => ({id, ...p})).reverse();
+            const container = document.getElementById("listaPedidos");
+            
+            document.getElementById("totalPedidos").textContent = lista.length;
+            document.getElementById("novosPedidos").textContent = lista.filter(p => p.status === 'novo').length;
+            
+            if (lista.length === 0) {
+                container.innerHTML = '<p class="aviso">📋 Nenhum pedido ainda</p>';
+                return;
+            }
+
+            container.innerHTML = lista.map(p => `
+                <div class="pedido-item ${p.status === 'novo' ? 'pedido-novo' : ''}">
+                    <div class="pedido-cabecalho">
+                        <span>Pedido #${String(p.numero).slice(-6)}</span>
+                        <span>${p.data}</span>
+                        <span class="status-badge status-${p.status}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
+                    </div>
+                    <div><strong>Cliente:</strong> ${p.cliente} | 📱 ${p.telefone}</div>
+                    <div><strong>Endereço:</strong> ${p.endereco || 'Não informado'}</div>
+                    <div><strong>Pagamento:</strong> ${p.formaPagamento === 'pix' ? '💸 PIX' : '💳 Cartão'}</div>
+                    <div style="margin-top:8px;">
+                        <strong>Itens:</strong><br>
+                        ${p.itens.map(i => `${i.quantidade}x ${i.nome} — R$ ${(i.preco*i.quantidade).toFixed(2).replace(".",",")}`).join("<br>")}
+                    </div>
+                    <div style="margin-top:8px; font-weight:bold; font-size:18px; color:#8B0080;">
+                        TOTAL: R$ ${p.valorTotal.toFixed(2).replace(".",",")}
+                    </div>
+                    <div style="margin-top:10px;">
+                        <button onclick="mudarStatus('${p.id}', 'preparando')" style="padding:5px 10px; background:#f39c12; color:white; border:none; border-radius:5px; cursor:pointer;">Preparando</button>
+                        <button onclick="mudarStatus('${p.id}', 'enviado')" style="padding:5px 10px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer; margin:0 5px;">Enviado</button>
+                        <button onclick="mudarStatus('${p.id}', 'entregue')" style="padding:5px 10px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">Entregue</button>
+                    </div>
+                </div>
+            `).join("");
+        });
+    };
+
+    window.mudarStatus = async function(id, status) {
+        await update(ref(db, 'pedidos/' + id), {status});
+        alert("✅ Status atualizado!");
+    };
+
+    // ============== CONTROLE DE ESTOQUE (ADMIN) ==============
+    window.carregarEstoque = function() {
+        onValue(ref(db, 'produtos'), (snapshot) => {
+            const produtos = snapshot.val() || {};
+            const lista = Object.entries(produtos).map(([id, p]) => ({id, ...p}));
+            const container = document.getElementById("listaEstoque");
+            
+            if (lista.length === 0) {
+                container.innerHTML = '<p class="aviso">📦 Nenhum produto cadastrado</p>';
+                return;
+            }
+
+            container.innerHTML = lista.map(p => `
+                <div style="padding:12px; background:#f9f9f9; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>${p.nome}</strong>
+                        <span style="font-size:18px; font-weight:bold; color:${p.estoque <= p.estoqueMinimo ? '#e74c3c' : '#28a745'};">
+                            ${p.estoque} unidades
+                        </span>
+                    </div>
+                    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                        <button onclick="ajustarEstoque('${p.id}', ${p.estoque - 5})" style="padding:5px 10px; border:none; border-radius:5px; cursor:pointer;">-5</button>
+                        <button onclick="ajustarEstoque('${p.id}', ${p.estoque - 1})" style="padding:5px 10px; border:none; border-radius:5px; cursor:pointer;">-1</button>
+                        <input type="number" value="${p.estoque}" 
+                               onchange="definirEstoque('${p.id}', this.value)"
+                               style="width:70px; padding:5px; text-align:center; border-radius:5px; border:1px solid #ddd;">
+                        <button onclick="ajustarEstoque('${p.id}', ${p.estoque + 1})" style="padding:5px 10px; border:none; border-radius:5px; cursor:pointer;">+1</button>
+                        <button onclick="ajustarEstoque('${p.id}', ${p.estoque + 5})" style="padding:5px 10px; border:none; border-radius:5px; cursor:pointer;">+5</button>
+                        <button onclick="excluirProduto('${p.id}')" style="margin-left:auto; padding:5px 10px; background:#dc3545; color:white; border:none; border-radius:5px; cursor:pointer;">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join("");
+        });
+    };
+
+    window.ajustarEstoque = async function(id, novoValor) {
+        if (novoValor < 0) novoValor = 0;
+        await update(ref(db, 'produtos/' + id), {estoque: novoValor});
+    };
+
+    window.definirEstoque = async function(id, valor) {
+        await update(ref(db, 'produtos/' + id), {estoque: parseInt(valor) || 0});
+    };
+
+    window.excluirProduto = async function(id) {
+        if (!confirm("Excluir este produto?")) return;
+        await remove(ref(db, 'produtos/' + id));
+    };
+
+    // ============== INICIALIZAR ==============
+    document.getElementById('chavePixDisplay').textContent = CHAVE_PIX;
+    window.onload = () => {
+        carregarProdutos();
+    };
+</script>
+</body>
+</html>

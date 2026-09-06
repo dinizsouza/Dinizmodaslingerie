@@ -29,24 +29,60 @@
         header {
             background: linear-gradient(135deg, #8B0080, #c72fc7);
             color: white; text-align: center; padding: 20px; border-radius: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 15px; position: relative;
         }
         h1 { font-size: 24px; }
-        .admin-btn {
-            position: fixed; top: 10px; right: 10px; background: white; color: #8B0080;
-            border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 100;
+
+        /* 📱 BOTÃO MENU LATERAL — SÓ APARECE QUANDO CLICA */
+        .menu-toggle {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            font-size: 24px; padding: 8px 12px; border-radius: 8px; cursor: pointer;
         }
 
-        .login-box {
+        /* 📋 MENU LATERAL ESQUERDA — FECHADO POR PADRÃO */
+        .sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 280px;
+            background: white; box-shadow: 2px 0 15px rgba(0,0,0,0.15);
+            z-index: 300; transform: translateX(-100%); transition: transform 0.3s ease;
+            padding: 20px; overflow-y: auto;
+        }
+        .sidebar.aberto { transform: translateX(0); }
+        .sidebar-fundo {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 250;
+            display: none;
+        }
+        .sidebar-fundo.ativo { display: block; }
+
+        .sidebar h2 { color: #8B0080; font-size: 20px; margin-bottom: 20px; text-align: center; }
+        .sidebar .btn-menu-lateral {
+            width: 100%; padding: 14px; margin-bottom: 10px; border: none;
+            border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;
+            background: #f3e5f5; color: #8B0080; text-align: left;
+            transition: all 0.2s;
+        }
+        .sidebar .btn-menu-lateral:hover { background: #e8d5eb; }
+        .sidebar .btn-menu-lateral.ativo { background: #8B0080; color: white; }
+        .sidebar .btn-sair {
+            background: #dc3545; color: white; margin-top: 20px;
+            text-align: center;
+        }
+        .fechar-sidebar {
+            position: absolute; top: 15px; right: 15px; font-size: 24px;
+            background: none; border: none; cursor: pointer; color: #888;
+        }
+
+        /* 🔐 CAIXA DE SENHA ADM */
+        .senha-box {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            z-index: 200; width: 90%; max-width: 350px; display: none;
+            z-index: 400; width: 90%; max-width: 350px; display: none;
         }
-        .login-box.ativo { display: block; }
-        .login-box h2 { color: #8B0080; margin-bottom: 15px; text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
-        .login-box button { width: 100%; padding: 12px; background: #8B0080; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .fechar { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
+        .senha-box.ativo { display: block; }
+        .senha-box h3 { color: #8B0080; margin-bottom: 15px; text-align: center; }
+        .senha-box input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .senha-box button { width: 100%; padding: 12px; background: #8B0080; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .senha-box .fechar { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #888; }
 
         .menu-topo { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .btn-menu { padding: 10px 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
@@ -66,52 +102,26 @@
         .estoque { font-size: 13px; color: #28a745; margin-bottom: 12px; }
         .estoque.baixo { color: #e67e22; }
 
-        /* ✅ BOTÃO COMPRAR AGORA — BEM GRANDE E DESTAQUE! */
+        /* 🟣 BOTÃO COMPRAR AGORA — BEM GRANDE! */
         .btn-comprar-agora {
-            width: 100%;
-            background: linear-gradient(45deg, #8B0080, #c72fc7);
-            color: white;
-            font-size: 19px;
-            font-weight: bold;
-            border: none;
-            padding: 16px 20px;
-            border-radius: 10px;
-            cursor: pointer;
+            width: 100%; background: linear-gradient(45deg, #8B0080, #c72fc7);
+            color: white; font-size: 19px; font-weight: bold; border: none;
+            padding: 16px 20px; border-radius: 10px; cursor: pointer;
             box-shadow: 0 4px 12px rgba(139, 0, 128, 0.3);
-            transition: all 0.2s;
-            margin-bottom: 8px;
+            transition: all 0.2s; margin-bottom: 8px;
         }
-        .btn-comprar-agora:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 6px rgba(139, 0, 128, 0.3);
-        }
-        .btn-comprar-agora:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
+        .btn-comprar-agora:active { transform: scale(0.98); }
+        .btn-comprar-agora:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        /* ✅ BOTÃO ADICIONAR AO CARRINHO — MENOR E DISCRETO */
+        /* 🟢 BOTÃO ADICIONAR — MENOR */
         .btn-adicionar {
-            width: 100%;
-            background: #28a745;
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
+            width: 100%; background: #28a745; color: white;
+            font-size: 15px; font-weight: bold; border: none;
+            padding: 10px 15px; border-radius: 8px; cursor: pointer;
             transition: background 0.2s;
         }
-        .btn-adicionar:hover {
-            background: #218838;
-        }
-        .btn-adicionar:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+        .btn-adicionar:hover { background: #218838; }
+        .btn-adicionar:disabled { background: #ccc; cursor: not-allowed; }
 
         .form-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
         .form-box h2 { color: #8B0080; margin-bottom: 15px; font-size: 18px; }
@@ -146,6 +156,7 @@
         .opcao-pagamento strong { font-size: 16px; display: block; margin-bottom: 5px; }
         .pix-chave {
             background: #fff3cd; border: 1px dashed #d6b656; padding: 12px; border-radius: 8px; margin-top: 10px; word-break: break-all; font-family: monospace;
+            font-size: 13px;
         }
         .btn-pagar-cartao {
             display: block; text-align: center; background: #009EE3; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px;
@@ -156,27 +167,47 @@
         .valor-total-pagamento {
             background: #f0e6f0; padding: 12px; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; color: #8B0080; margin: 15px 0;
         }
-        .aviso-valor {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 14px;
-            color: #856404;
+        .metricas-box {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;
         }
+        .metrica-card {
+            background: white; padding: 20px; border-radius: 12px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .metrica-valor { font-size: 28px; font-weight: bold; color: #8B0080; margin-bottom: 5px; }
+        .metrica-nome { font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
-<button class="admin-btn" onclick="abrirLogin()">⚙️ Admin</button>
+<!-- 📱 BOTÃO ABRIR MENU LATERAL -->
+<button class="menu-toggle" onclick="abrirMenuLateral()">☰</button>
 
-<div class="login-box" id="telaLogin">
-    <span class="fechar" onclick="fecharLogin()">&times;</span>
-    <h2>🔐 Área Administrativa</h2>
-    <input type="password" id="senhaAdmin" placeholder="Digite sua senha">
-    <button onclick="fazerLogin()">Entrar</button>
-    <p style="font-size:12px; color:#888; margin-top:10px; text-align:center;">Senha padrão: 290413</p>
+<!-- 📋 MENU LATERAL -->
+<div class="sidebar-fundo" id="fundoSidebar" onclick="fecharMenuLateral()"></div>
+<div class="sidebar" id="menuLateral">
+    <button class="fechar-sidebar" onclick="fecharMenuLateral()">&times;</button>
+    <h2>💜 Diniz Modas</h2>
+    
+    <button class="btn-menu-lateral ativo" onclick="abrirSecao('loja'); fecharMenuLateral();">🛍️ Loja</button>
+    <button class="btn-menu-lateral" onclick="abrirSecao('carrinho'); fecharMenuLateral();">🛒 Carrinho</button>
+    <button class="btn-menu-lateral" id="btnAreaAdmin" onclick="abrirSenhaAdmin(); fecharMenuLateral();">🔐 Área Administrativa</button>
+    
+    <div id="menuAdminItens" class="escondido" style="margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+        <button class="btn-menu-lateral" onclick="abrirSecao('cadastrar'); fecharMenuLateral();">➕ Cadastrar Produto</button>
+        <button class="btn-menu-lateral" onclick="abrirSecao('pedidos'); fecharMenuLateral();">📋 Pedidos</button>
+        <button class="btn-menu-lateral" onclick="abrirSecao('estoque'); fecharMenuLateral();">📦 Estoque</button>
+        <button class="btn-menu-lateral" onclick="abrirSecao('metricas'); fecharMenuLateral();">📊 Métricas</button>
+        <button class="btn-menu-lateral btn-sair" onclick="sairAdmin(); fecharMenuLateral();">🚪 Sair</button>
+    </div>
+</div>
+
+<!-- 🔐 CAIXA DE SENHA ADMIN -->
+<div class="senha-box" id="caixaSenhaAdmin">
+    <span class="fechar" onclick="fecharSenhaAdmin()">&times;</span>
+    <h3>🔐 Área Administrativa</h3>
+    <input type="password" id="senhaAdmin" placeholder="Digite sua senha de administrador">
+    <button onclick="verificarSenhaAdmin()">Entrar</button>
 </div>
 
 <header>
@@ -186,9 +217,6 @@
 
 <div class="menu-topo">
     <button class="btn-menu ativo" onclick="abrirSecao('loja')">🛍️ Loja</button>
-    <button class="btn-menu escondido" id="menuCadastrar" onclick="abrirSecao('cadastrar')">➕ Cadastrar</button>
-    <button class="btn-menu escondido" id="menuPedidos" onclick="abrirSecao('pedidos')">📋 Pedidos</button>
-    <button class="btn-menu escondido" id="menuEstoque" onclick="abrirSecao('estoque')">📦 Estoque</button>
     <button class="btn-menu carrinho-btn" onclick="abrirSecao('carrinho')">🛒 Carrinho (<span id="contarCarrinho">0</span>)</button>
 </div>
 
@@ -196,7 +224,7 @@
     <div class="grade-produtos" id="gradeProdutos"></div>
 </div>
 
-<div id="sec-cadastrar" class="secao">
+<div id="sec-cadastrar" class="secao escondido">
     <div class="form-box">
         <h2>➕ Cadastrar Produto</h2>
         <div class="area-foto" onclick="document.getElementById('fotoProd').click()">
@@ -224,25 +252,50 @@
             <input type="number" id="estoqueProd" placeholder="Quantidade em estoque" min="1">
             <input type="number" id="estoqueBaixo" placeholder="Aviso estoque baixo" min="1" value="5">
         </div>
-        <button class="btn-principal" onclick="cadastrarProduto()">✅ Cadastrar</button>
+        <button class="btn-principal" onclick="cadastrarProduto()">✅ Cadastrar Produto</button>
     </div>
 </div>
 
-<div id="sec-pedidos" class="secao">
+<div id="sec-pedidos" class="secao escondido">
     <div class="form-box">
         <h2>📋 Pedidos Recebidos</h2>
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
             <span>Total: <strong id="totalPedidos">0</strong></span>
             <span style="color:#e74c3c;">Novos: <strong id="novosPedidos">0</strong></span>
+            <span style="color:#28a745;">Concluídos: <strong id="concluidosPedidos">0</strong></span>
         </div>
         <div id="listaPedidos"></div>
     </div>
 </div>
 
-<div id="sec-estoque" class="secao">
+<div id="sec-estoque" class="secao escondido">
     <div class="form-box">
         <h2>📦 Controle de Estoque</h2>
         <div id="listaEstoque"></div>
+    </div>
+</div>
+
+<div id="sec-metricas" class="secao escondido">
+    <div class="form-box">
+        <h2>📊 Métricas e Estatísticas</h2>
+        <div class="metricas-box">
+            <div class="metrica-card">
+                <div class="metrica-valor" id="mTotalPedidos">0</div>
+                <div class="metrica-nome">Total de Pedidos</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-valor" id="mValorTotal">R$ 0,00</div>
+                <div class="metrica-nome">Faturamento Total</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-valor" id="mProdutos">0</div>
+                <div class="metrica-nome">Produtos Cadastrados</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-valor" id="mEstoqueBaixo">0</div>
+                <div class="metrica-nome">Estoque Baixo</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -266,7 +319,6 @@
     <div class="pagamento-box" id="caixaPagamento" style="display:none;">
         <h3>💳 Forma de Pagamento</h3>
         
-        <!-- 💰 VALOR TOTAL APARECE BEM GRANDE PARA O CLIENTE VER -->
         <div class="valor-total-pagamento">
             Valor a Pagar: R$ <span id="valorPagamento">0,00</span>
         </div>
@@ -275,12 +327,12 @@
             <strong>💸 PIX — À vista</strong>
             <p>Copia e cola no app do banco • Confirmação rápida</p>
             <div class="pix-chave" id="chavePixDisplay">
-                11997547511
+                00020126580014BR.GOV.BCB.PIX0136f5cc71a3-9e60-48e7-8b09-f8e810c1ba1c5204000053039865802BR5922Marcelo Diniz de Souza6009SAO PAULO62140510o8GUCCu3Ec6304ACD3
             </div>
         </div>
 
         <div class="opcao-pagamento" id="opcaoCartao" onclick="escolherPagamento('cartao')">
-            <strong>💳 Cartão de Crédito / Débito — Mercado Pago</strong>
+            <strong>💳 Cartão — Mercado Pago</strong>
             <p>Digite esse valor no site do Mercado Pago:</p>
             <div style="font-size:26px; font-weight:bold; color:#009EE3; background:#e6f4fc; padding:12px; border-radius:8px; text-align:center; margin:8px 0;">
                 R$ <span id="valorCartao">0,00</span>
@@ -304,15 +356,11 @@
     const { ref, push, onValue, update, remove, get } = await import("https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js");
 
     // ==============================================================
-    // 🔧 SUAS CONFIGURAÇÕES — COLOQUE SEUS DADOS AQUI!
+    // 🔑 CONFIGURAÇÕES — ALTERE AQUI!
     // ==============================================================
-    const SENHA_ADMIN = "290413"; // ← Senha de admin
-    
-    // 💸 CHAVE PIX — JÁ PREENCHIDA!
-    const CHAVE_PIX = "11997547511"; 
-    
-    // 💳 LINK DE PAGAMENTO — Mercado Pago (valor aparece na tela para o cliente digitar)
-    const LINK_CARTAO_BASE = "https://link.mercadopago.com.br/lojadinizmodas";
+    const SENHA_ADMIN = "290413"; // ← Senha do Administrador
+    const CHAVE_PIX = "00020126580014BR.GOV.BCB.PIX0136f5cc71a3-9e60-48e7-8b09-f8e810c1ba1c5204000053039865802BR5922Marcelo Diniz de Souza6009SAO PAULO62140510o8GUCCu3Ec6304ACD3";
+    const LINK_MERCADO_PAGO = "https://link.mercadopago.com.br/lojadinizmodas";
     // ==============================================================
 
     let adminLogado = false;
@@ -322,104 +370,21 @@
     let pagamentoEscolhido = "";
     let valorTotalAtual = 0;
 
-    // ============== ATUALIZAR VALOR NO PAGAMENTO ==============
-    function atualizarValorPagamento() {
-        valorTotalAtual = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
-        const valorFormatado = valorTotalAtual.toFixed(2).replace(".", ",");
-        document.getElementById('valorPagamento').textContent = valorFormatado;
-        document.getElementById('valorCartao').textContent = valorFormatado;
-    }
-
-    // ============== LOGIN ADMIN ==============
-    window.abrirLogin = function() {
-        document.getElementById("telaLogin").classList.add("ativo");
+    // 📋 MENU LATERAL
+    window.abrirMenuLateral = function() {
+        document.getElementById('menuLateral').classList.add('aberto');
+        document.getElementById('fundoSidebar').classList.add('ativo');
     };
-    window.fecharLogin = function() {
-        document.getElementById("telaLogin").classList.remove("ativo");
-    };
-    window.fazerLogin = function() {
-        const senha = document.getElementById("senhaAdmin").value;
-        if (senha === SENHA_ADMIN) {
-            adminLogado = true;
-            fecharLogin();
-            document.getElementById("menuCadastrar").classList.remove("escondido");
-            document.getElementById("menuPedidos").classList.remove("escondido");
-            document.getElementById("menuEstoque").classList.remove("escondido");
-            alert("✅ Bem-vindo, Administrador!");
-            carregarPedidos();
-            carregarEstoque();
-        } else {
-            alert("❌ Senha incorreta!");
-        }
+    window.fecharMenuLateral = function() {
+        document.getElementById('menuLateral').classList.remove('aberto');
+        document.getElementById('fundoSidebar').classList.remove('ativo');
     };
 
-    // ============== NAVEGAÇÃO ==============
-    window.abrirSecao = function(nome) {
-        document.querySelectorAll(".secao").forEach(s => s.classList.remove("ativa"));
-        document.querySelectorAll(".btn-menu").forEach(b => b.classList.remove("ativo"));
-        event.target.classList.add("ativo");
-        document.getElementById(`sec-${nome}`).classList.add("ativa");
-        
-        if (nome === 'loja') carregarProdutos();
-        if (nome === 'carrinho') {
-            atualizarCarrinho();
-            atualizarValorPagamento();
-        }
-        if (nome === 'pedidos' && adminLogado) carregarPedidos();
-        if (nome === 'estoque' && adminLogado) carregarEstoque();
+    // 🔐 SENHA ADMIN
+    window.abrirSenhaAdmin = function() {
+        if (adminLogado) return;
+        document.getElementById('caixaSenhaAdmin').classList.add('ativo');
+        document.getElementById('senhaAdmin').focus();
     };
-
-    // ============== FOTO ==============
-    window.previaFoto = function(input) {
-        if (input.files && input.files[0]) {
-            const leitor = new FileReader();
-            leitor.onload = e => {
-                document.getElementById("previewFoto").src = e.target.result;
-                document.getElementById("previewFoto").style.display = "block";
-                document.getElementById("iconeFoto").style.display = "none";
-                fotoBase64 = e.target.result;
-            };
-            leitor.readAsDataURL(input.files[0]);
-        }
-    };
-
-    // ============== CADASTRAR PRODUTO ==============
-    window.cadastrarProduto = async function() {
-        const nome = document.getElementById("nomeProd").value.trim();
-        const cat = document.getElementById("catProd").value;
-        const tam = document.getElementById("tamProd").value.trim() || "Único";
-        const preco = parseFloat(document.getElementById("precoProd").value);
-        const estoque = parseInt(document.getElementById("estoqueProd").value) || 10;
-        const estoqueMinimo = parseInt(document.getElementById("estoqueBaixo").value) || 5;
-
-        if (!nome || !preco) return alert("⚠️ Preencha nome e preço!");
-
-        const novoProduto = {
-            nome, categoria: cat, tamanho: tam, preco,
-            estoque, estoqueMinimo, imagem: fotoBase64 || "",
-            dataCadastro: new Date().toISOString()
-        };
-
-        await push(ref(db, 'produtos'), novoProduto);
-        alert("✅ Produto cadastrado com sucesso!");
-        
-        document.getElementById("nomeProd").value = "";
-        document.getElementById("tamProd").value = "";
-        document.getElementById("precoProd").value = "";
-        document.getElementById("estoqueProd").value = "";
-        document.getElementById("previewFoto").style.display = "none";
-        document.getElementById("iconeFoto").style.display = "block";
-        fotoBase64 = "";
-        
-        carregarProdutos();
-    };
-
-    // ============== CARREGAR PRODUTOS ==============
-    window.carregarProdutos = function() {
-        onValue(ref(db, 'produtos'), (snapshot) => {
-            const produtos = snapshot.val() || {};
-            listaProdutos = Object.entries(produtos).map(([id, p]) => ({id, ...p}));
-            const container = document.getElementById("gradeProdutos");
-            
-            if (listaProdutos.length === 0) {
-                containe
+    window.fecharSenhaAdmin = function() {
+        document.ge
